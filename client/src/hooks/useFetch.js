@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { apiFetch } from "../api/http.js";
 
 // GET condiviso tra le pagine: gestisce loading / error / data e offre refetch.
 // Espone anche setData così le pagine possono aggiornare la lista in locale
 // dopo le mutazioni (creazione/modifica/disattivazione) senza rifare la GET.
-export default function useFetch(url, options) {
+export default function useFetch(endpoint, options = {}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,11 +13,7 @@ export default function useFetch(url, options) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(url, options);
-      const payload = await res.json().catch(() => null);
-      if (!res.ok)
-        throw new Error(payload?.error?.message || "Errore caricamento dati");
-      setData(payload);
+      setData(await apiFetch(endpoint, options));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -26,7 +23,7 @@ export default function useFetch(url, options) {
 
   useEffect(() => {
     fetchData();
-  }, [url]);
+  }, [endpoint]);
 
   return { data, setData, loading, error, refetch: fetchData };
 }

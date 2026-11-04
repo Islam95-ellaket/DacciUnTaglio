@@ -1,15 +1,10 @@
 import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
-
-const API = import.meta.env.VITE_API_URL;
+import { formatPrice } from "../utils/format.js";
 
 export default function ServicesList() {
-  const { data: services, loading, error, refetch: loadServices } = useFetch(
-    `${API}/services`
-  );
-
-  const formatPrice = (v) =>
-    v.toLocaleString("it-IT", { style: "currency", currency: "EUR" });
+  const { data: services, loading, error, refetch: loadServices } =
+    useFetch("/services");
 
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={loadServices} />;

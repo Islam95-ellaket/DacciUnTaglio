@@ -6,8 +6,6 @@ import authRoutes from "./routes/authRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js"
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import availabilityRoutes from "./routes/availabilityRoutes.js";
-import auth from "./middleware/auth.js";
-import authorize from "./middleware/authorize.js";
 import errorHandler, { notFound } from "./middleware/errorHandler.js";
 
 // Carica le variabili d'ambiente
@@ -32,15 +30,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes)
 app.use("/api/appointments", appointmentRoutes)
 app.use("/api/availability", availabilityRoutes);
-
-// route protette di PROVA (temporanee, per il collaudo con Bruno)
-app.get("/api/protected-test", auth, (req, res) => {
-  res.json({ message: "Sei autenticato", user: req.user });
-});
-
-app.get("/api/admin-test", auth, authorize(["admin"]), (req, res) => {
-  res.json({ message: "Sei admin" });
-});
 
 // 404 per le route non gestite (deve stare DOPO tutte le route)
 app.use(notFound);

@@ -1,23 +1,28 @@
 import { useState, useEffect, useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
-
-const API = import.meta.env.VITE_API_URL;
+import useFetch from "../hooks/useFetch";
+import { apiFetch } from "../api/http.js";
+import { formatPrice, formatDate, formatTime, getRomeDate } from "../utils/format.js";
 
 export default function BookingFlow() {
   const { token } = useContext(AuthContext);
 
-  // --- Stati ---
+  // --- Step 1: servizi ---
+  const {
+    data: services,
+    loading: servicesLoading,
+    error: servicesError,
+    refetch: loadServices,
+  } = useFetch("/services");
+
+  // --- Stati del flusso ---
   const [step, setStep] = useState(1);
-  const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-  // loading ed errori separati per servizi e slot
-  const [servicesLoading, setServicesLoading] = useState(false);
-  const [servicesError, setServicesError] = useState(null);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [slotsError, setSlotsError] = useState(null);
 
@@ -25,30 +30,18 @@ export default function BookingFlow() {
   const [confirmed, setConfirmed] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Data di oggi in fuso Europe/Rome, formato YYYY-MM-DD
-  const today = new Date().toLocaleDateString("sv-SE", {
-    timeZone: "Europe/Rome",
-  });
+  const today = getRomeDate();
 
-  const loadServices = async () => {
-    setServicesLoading(true);
-    setServicesError(null);
-    try {
-      const res = await fetch(`${API}/services`);
-      if (!res.ok) throw new Error("Errore caricamento servizi");
-      const data = await res.json();
-      setServices(data);
-    } catch (err) {
-      setServicesError(err.message);
-    } finally {
-      setServicesLoading(false);
-    }
+  // Torna allo step 1 ripulendo lo stato degli step successivi
+  const goToStep1 = () => {
+    setStep(1);
+    setSelectedService(null);
+    setDate("");
+    setSlots([]);
+    setSelectedSlot(null);
+    setSlotsError(null);
+    setMessage("");
   };
-
-  // --- Step 1: carica servizi all'avvio ---
-  useEffect(() => {
-    loadServices();
-  }, []);
 
   // --- Step 2: carica slot quando cambia la data o il servizio ---
   const loadSlots = async () => {
@@ -57,11 +50,9 @@ export default function BookingFlow() {
     setSlotsError(null);
     setSlots([]);
     try {
-      const res = await fetch(
-        `${API}/availability?serviceId=${selectedService._id}&date=${date}`
+      const data = await apiFetch(
+        `/availability?serviceId=${selectedService._id}&date=${date}`
       );
-      if (!res.ok) throw new Error("Errore caricamento slot");
-      const data = await res.json();
       setSlots(data);
     } catch (err) {
       setSlotsError(err.message);
@@ -88,46 +79,36 @@ export default function BookingFlow() {
     setConfirming(true);
     setMessage("");
     try {
-      const res = await fetch(`${API}/appointments`, {
+      await apiFetch("/appointments", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          serviceId: selectedService._id,
-          start: selectedSlot,
-        }),
+        token,
+        body: { serviceId: selectedService._id, start: selectedSlot },
       });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          setMessage("Sessione scaduta, effettua di nuovo l'accesso.");
-          return;
-        }
-        if (res.status === 409) {
-          // Ricarica gli slot e torna allo step 2
-          try {
-            const slotRes = await fetch(
-              `${API}/availability?serviceId=${selectedService._id}&date=${date}`
-            );
-            if (slotRes.ok) setSlots(await slotRes.json());
-          } catch {
-            // se il ricarico fallisce, l'utente può cambiare data per riprovare
-          }
-          setSelectedSlot(null);
-          setStep(2);
-          setMessage(
-            "Orario appena occupato da un altro cliente, scegline un altro."
-          );
-          return;
-        }
-        throw new Error(data.error?.message || "Errore prenotazione");
-      }
-
       setConfirmed(true);
     } catch (err) {
+      if (err.status === 401) {
+        setMessage("Sessione scaduta, effettua di nuovo l'accesso.");
+        return;
+      }
+
+      if (err.status === 409) {
+        // Ricarica gli slot e torna allo step 2
+        try {
+          const fresh = await apiFetch(
+            `/availability?serviceId=${selectedService._id}&date=${date}`
+          );
+          setSlots(fresh);
+        } catch {
+          // se il ricarico fallisce, l'utente può cambiare data per riprovare
+        }
+        setSelectedSlot(null);
+        setStep(2);
+        setMessage(
+          "Orario appena occupato da un altro cliente, scegline un altro."
+        );
+        return;
+      }
+
       setMessage(err.message);
     } finally {
       setConfirming(false);
@@ -136,34 +117,8 @@ export default function BookingFlow() {
 
   const resetAll = () => {
     setConfirmed(false);
-    setStep(1);
-    setSelectedService(null);
-    setDate("");
-    setSelectedSlot(null);
-    setSlots([]);
-    setSlotsError(null);
-    setMessage("");
+    goToStep1();
   };
-
-  // --- Formattazione ---
-  const formatPrice = (v) =>
-    v.toLocaleString("it-IT", { style: "currency", currency: "EUR" });
-
-  const formatSlot = (iso) =>
-    new Date(iso).toLocaleString("it-IT", {
-      timeZone: "Europe/Rome",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  const formatDate = (iso) =>
-    new Date(iso).toLocaleDateString("it-IT", {
-      timeZone: "Europe/Rome",
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
 
   // --- Schermata di conferma ---
   if (confirmed) {
@@ -173,7 +128,7 @@ export default function BookingFlow() {
           <h4>✅ Prenotazione confermata!</h4>
           <p>
             {selectedService.name} — {formatDate(selectedSlot)} alle{" "}
-            {formatSlot(selectedSlot)}
+            {formatTime(selectedSlot)}
           </p>
           <p className="fw-bold">{formatPrice(selectedService.price)}</p>
         </div>
@@ -189,7 +144,7 @@ export default function BookingFlow() {
     if (servicesLoading)
       return <div className="text-center mt-5">Caricamento...</div>;
     if (servicesError) {
-      return <ErrorAlert message={servicesError} onRetry={loadServices} />
+      return <ErrorAlert message={servicesError} onRetry={loadServices} />;
     }
     return (
       <div>
@@ -265,32 +220,22 @@ export default function BookingFlow() {
             {slots.map((slot) => (
               <button
                 key={slot}
-                className={`btn ${selectedSlot === slot ? "btn-primary" : "btn-outline-primary"
-                  }`}
+                className={`btn ${
+                  selectedSlot === slot ? "btn-primary" : "btn-outline-primary"
+                }`}
                 onClick={() => {
                   setSelectedSlot(slot);
                   setMessage("");
                 }}
               >
-                {formatSlot(slot)}
+                {formatTime(slot)}
               </button>
             ))}
           </div>
         )}
 
         <div className="d-flex gap-2">
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              setStep(1);
-              setSelectedService(null);
-              setDate("");
-              setSlots([]);
-              setSelectedSlot(null);
-              setSlotsError(null);
-              setMessage("");
-            }}
-          >
+          <button className="btn btn-secondary" onClick={goToStep1}>
             Indietro
           </button>
           <button
@@ -328,7 +273,7 @@ export default function BookingFlow() {
               <strong>Data:</strong> {formatDate(selectedSlot)}
             </p>
             <p>
-              <strong>Ora:</strong> {formatSlot(selectedSlot)}
+              <strong>Ora:</strong> {formatTime(selectedSlot)}
             </p>
             <p className="fw-bold">
               <strong>Prezzo:</strong> {formatPrice(selectedService.price)}

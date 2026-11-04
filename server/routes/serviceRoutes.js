@@ -1,18 +1,20 @@
-import {Router} from "express"
-import {createValidator, updateValidator} from "../middleware/validators/serviceValidators.js"
-import { getServices, createService, updateService, deleteService } from "../controllers/serviceController.js";
-import auth from "../middleware/auth.js"
-import authorize from "../middleware/authorize.js"
+import { Router } from "express";
+import auth from "../middleware/auth.js";
+import authorize from "../middleware/authorize.js";
+import { createValidator, updateValidator } from "../middleware/validators/serviceValidators.js";
+import {
+    getServices,
+    createService,
+    updateService,
+    deleteService,
+} from "../controllers/serviceController.js";
 
+const router = Router();
 
-const router = Router()
-// GET pubblico: nessun middleware auth
+// GET pubblico; scrittura riservata agli admin
 router.get("/", getServices);
-// POST protetto: auth → authorize → validator → controller
-router.post("/", auth, authorize(["admin"]), createValidator, createService)
-// PATCH protetto: auth → authorize → validator → controller
-router.patch("/:id", auth, authorize(["admin"]), updateValidator, updateService)
-// DELETE authorize 
-router.delete("/:id", auth, authorize(["admin"]), deleteService)
+router.post("/", auth, authorize(["admin"]), createValidator, createService);
+router.patch("/:id", auth, authorize(["admin"]), updateValidator, updateService);
+router.delete("/:id", auth, authorize(["admin"]), deleteService);
 
-export default router
+export default router;

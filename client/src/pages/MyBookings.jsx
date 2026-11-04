@@ -2,22 +2,9 @@ import { useState, useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
-
-const API = import.meta.env.VITE_API_URL;
-
-const STATUS_LABELS = {
-  active: "Attiva",
-  cancelled: "Annullata",
-  completed: "Completata",
-  "no-show": "Non presentato",
-};
-
-const STATUS_BADGES = {
-  active: "bg-primary",
-  cancelled: "bg-danger",
-  completed: "bg-success",
-  "no-show": "bg-warning text-dark",
-};
+import { apiFetch } from "../api/http.js";
+import { formatPrice, formatDate, formatTime } from "../utils/format.js";
+import { STATUS_LABELS, STATUS_BADGES } from "../utils/constants.js";
 
 export default function MyBookings() {
   const { token } = useContext(AuthContext);
@@ -29,9 +16,7 @@ export default function MyBookings() {
     loading,
     error,
     refetch: loadAppointments,
-  } = useFetch(`${API}/appointments/mine`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  } = useFetch("/appointments/mine", { token });
 
   const appointments = data ?? [];
 
@@ -46,14 +31,7 @@ export default function MyBookings() {
     setCancelling(id);
     setMessage(null);
     try {
-      const res = await fetch(`${API}/appointments/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error?.message || "Errore durante l'annullamento");
-      }
+      await apiFetch(`/appointments/${id}`, { method: "DELETE", token });
 
       // Aggiorna la lista localmente: la prenotazione passa tra le annullate
       setAppointments((prev) =>
@@ -66,28 +44,6 @@ export default function MyBookings() {
       setCancelling(null);
     }
   };
-
-  // --- Formattazione ---
-  const formatPrice = (v) =>
-    typeof v === "number"
-      ? v.toLocaleString("it-IT", { style: "currency", currency: "EUR" })
-      : "";
-
-  const formatTime = (iso) =>
-    new Date(iso).toLocaleTimeString("it-IT", {
-      timeZone: "Europe/Rome",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  const formatDate = (iso) =>
-    new Date(iso).toLocaleDateString("it-IT", {
-      timeZone: "Europe/Rome",
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
 
   // --- Suddivisione in attive / passate ---
   const now = new Date();
@@ -140,10 +96,10 @@ export default function MyBookings() {
             <div className="col-md-6" key={a._id}>
               <div className="card h-100">
                 <div className="card-body">
-                  <h5 className="card-title">{a.service?.name}</h5>
+                  <h5 className="card-title">{a.serviceId?.name}</h5>
                   <p className="card-text mb-1">{formatDate(a.start)}</p>
                   <p className="card-text mb-1">Ore {formatTime(a.start)}</p>
-                  <p className="fw-bold">{formatPrice(a.service?.price)}</p>
+                  <p className="fw-bold">{formatPrice(a.serviceId?.price)}</p>
                   <button
                     className="btn btn-outline-danger btn-sm"
                     onClick={() => handleCancel(a._id)}
@@ -168,7 +124,7 @@ export default function MyBookings() {
             <div className="col-md-6" key={a._id}>
               <div className="card h-100 bg-light">
                 <div className="card-body">
-                  <h5 className="card-title">{a.service?.name}</h5>
+                  <h5 className="card-title">{a.serviceId?.name}</h5>
                   <p className="card-text mb-1">{formatDate(a.start)}</p>
                   <p className="card-text mb-2">Ore {formatTime(a.start)}</p>
                   <span className={`badge ${STATUS_BADGES[a.status] || "bg-secondary"}`}>

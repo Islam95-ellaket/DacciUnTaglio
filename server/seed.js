@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
@@ -43,9 +43,9 @@ async function seed() {
             address: "Via Roma 1, Milano",
             phone: "+39 02 1234567",
             timezone: "Europe/Rome",
-            workingHours: workingHours,
+            workingHours,
             blockedSlots: [],
-            recurringBlocks: recurringBlocks,
+            recurringBlocks,
         });
 
         console.log("Shop creato (lun-sab 09:00-19:00)");
@@ -62,7 +62,7 @@ async function seed() {
         await User.create({
             name: ADMIN_NAME,
             email: ADMIN_EMAIL,
-            passwordHash: passwordHash,
+            passwordHash,
             role: "admin",
         });
 

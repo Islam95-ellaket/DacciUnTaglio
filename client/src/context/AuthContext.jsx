@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import { apiFetch } from "../api/http.js";
 
 // 1) Crea il contesto (il "contenitore" condiviso)
 const AuthContext = createContext();
@@ -9,83 +10,36 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true); // true finché non abbiamo letto localStorage
 
-  // 3) Al mount (una sola volta): ricarica da localStorage
+  // 3) Al mount (una sola volta): ripristina la sessione da localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
 
-    if (savedToken) {
-      setToken(savedToken);
-    }
-
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedToken) setToken(savedToken);
+    if (savedUser) setUser(JSON.parse(savedUser));
 
     setLoading(false);
   }, []);
 
-  // 4) Login: chiama l'API, salva in localStorage + stato
-  const login = async (email, password) => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  // 4) Login e registrazione condividono la stessa chiamata e lo stesso salvataggio
+  const authenticate = async (endpoint, body) => {
+    const data = await apiFetch(`/auth${endpoint}`, { method: "POST", body });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error?.message || "Errore di login");
-      }
-
-      const data = await res.json();
-      const { token, user } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      setToken(token);
-      setUser(user);
-    } catch (error) {
-      console.log("ERROR:", error);
-      throw error;
-    }
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setToken(data.token);
+    setUser(data.user);
   };
 
-  // 5) Register: identico a login ma endpoint /register e body { name, email, password, phone }
-  const register = async (name, email, password, phone = "") => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, phone }),
-      });
+  const login = (email, password) => authenticate("/login", { email, password });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error?.message || "Errore di registrazione");
-      }
+  const register = (name, email, password, phone = "") =>
+    authenticate("/register", { name, email, password, phone });
 
-      const data = await res.json();
-      const { token, user } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      setToken(token);
-      setUser(user);
-    } catch (error) {
-      console.log("ERROR:", error);
-      throw error; // rilancia perché il form possa mostrare il messaggio
-    }
-  };
-
-  // 6) Logout: pulisci tutto
+  // 5) Logout: pulisci tutto
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
     setToken(null);
     setUser(null);
   };
@@ -99,5 +53,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// 7) Esporta il contesto (per usarlo con useContext nelle pagine)
+// 6) Esporta il contesto (per usarlo con useContext nelle pagine)
 export default AuthContext;

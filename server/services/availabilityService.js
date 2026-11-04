@@ -4,34 +4,9 @@ import Shop from "../models/Shop.js";
 import Appointment from "../models/Appointment.js";
 import { fromZonedTime } from "date-fns-tz";
 import ApiError from "../utils/ApiError.js";
+import { isValidDateString, nextDate } from "../utils/dateUtils.js";
 
 const MINUTE_MS = 60 * 1000;
-
-function isValidDateString(date) {
-    if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return false;
-    }
-
-    const [year, month, day] = date.split("-").map(Number);
-    const parsed = new Date(Date.UTC(year, month - 1, day));
-
-    return (
-        parsed.getUTCFullYear() === year &&
-        parsed.getUTCMonth() === month - 1 &&
-        parsed.getUTCDate() === day
-    );
-}
-
-function nextDate(date) {
-    const [year, month, day] = date.split("-").map(Number);
-    const next = new Date(Date.UTC(year, month - 1, day + 1));
-
-    return [
-        next.getUTCFullYear(),
-        String(next.getUTCMonth() + 1).padStart(2, "0"),
-        String(next.getUTCDate()).padStart(2, "0"),
-    ].join("-");
-}
 
 function parseTime(time) {
     if (typeof time !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
@@ -176,8 +151,10 @@ export const getAvailableSlots = async (serviceId, date) => {
 
     // 9. Genera gli slot consecutivi della durata del servizio
 
+    // Passo della griglia: configurabile sullo shop, default 10 minuti
     const SLOT_INTERVAL = Number(shop.slotInterval) || 10;
-        if (SLOT_INTERVAL <= 0) {
+
+    if (SLOT_INTERVAL <= 0) {
         throw new ApiError(500, "Intervallo degli slot del negozio non valido");
     }
 
