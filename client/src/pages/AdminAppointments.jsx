@@ -138,6 +138,47 @@ export default function AdminAppointments() {
   // Un appuntamento è "passato" quando la sua fine è precedente ad ora
   const isPast = (iso) => new Date(iso) < new Date();
 
+  // Azioni di un appuntamento: condivise tra la tabella desktop e le card mobile
+  const renderActions = (a) =>
+    isPast(a.end) ? (
+      <select
+        className="form-select form-select-sm"
+        value={a.status}
+        onChange={(e) => handleStatusChange(a._id, e.target.value)}
+        disabled={updating !== null}
+      >
+        <option value="completed">Completato</option>
+        <option value="cancelled">Annullato</option>
+        <option value="no-show">Non presentato</option>
+      </select>
+    ) : (
+      <>
+        {a.status === "active" && (
+          <button
+            className="btn btn-sm btn-outline-danger mb-1"
+            onClick={() => handleStatusChange(a._id, "cancelled")}
+            disabled={updating !== null}
+          >
+            {updating === a._id ? "..." : "Annulla"}
+          </button>
+        )}
+
+        {a.status === "cancelled" && (
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={() => handleStatusChange(a._id, "active")}
+            disabled={updating !== null}
+          >
+            {updating === a._id ? "..." : "Riattiva"}
+          </button>
+        )}
+
+        {(a.status === "completed" || a.status === "no-show") && (
+          <span className="text-muted">Nessuna azione</span>
+        )}
+      </>
+    );
+
   // Render
   return (
     <div>
@@ -195,49 +236,16 @@ export default function AdminAppointments() {
         </div>
       )}
 
-      {/* Tabella */}
+      {/* Elenco appuntamenti: card su mobile, tabella da tablet in su */}
       {!loading && !error && !invalidRange && appointments.length > 0 && (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Ora</th>
-                <th>Cliente</th>
-                <th>Contatto</th>
-                <th>Servizio</th>
-                <th>Prezzo</th>
-                <th>Stato</th>
-                <th>Azioni</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {appointments.map((a) => (
-                <tr key={a._id}>
-                  <td>{formatDateShort(a.start)}</td>
-
-                  <td>
-                    {formatTime(a.start)} - {formatTime(a.end)}
-                  </td>
-
-                  <td>{a.userId?.name || "—"}</td>
-
-                  <td>
-                    {a.userId?.phone ? (
-                      <a href={`tel:${a.userId.phone}`}>{a.userId.phone}</a>
-                    ) : (
-                      <a href={`mailto:${a.userId?.email}`}>
-                        {a.userId?.email || "—"}
-                      </a>
-                    )}
-                  </td>
-
-                  <td>{a.serviceId?.name || "—"}</td>
-
-                  <td>{formatPrice(a.serviceId?.price)}</td>
-
-                  <td>
+        <>
+          {/* Card su mobile */}
+          <div className="d-md-none">
+            {appointments.map((a) => (
+              <div className="card mb-2" key={a._id}>
+                <div className="card-body py-2">
+                  <div className="d-flex justify-content-between align-items-center mb-1">
+                    <strong>{a.userId?.name || "—"}</strong>
                     <span
                       className={`badge ${
                         STATUS_BADGES[a.status] || "bg-secondary"
@@ -245,57 +253,78 @@ export default function AdminAppointments() {
                     >
                       {STATUS_LABELS[a.status] || a.status}
                     </span>
-                  </td>
+                  </div>
+                  <div className="small text-muted mb-1">
+                    {a.serviceId?.name || "—"} · {formatPrice(a.serviceId?.price)}
+                  </div>
+                  <div className="small mb-2">
+                    {formatDateShort(a.start)} · {formatTime(a.start)} –{" "}
+                    {formatTime(a.end)}
+                  </div>
+                  {renderActions(a)}
+                </div>
+              </div>
+            ))}
+          </div>
 
-                  <td>
-                    {isPast(a.end) ? (
-                      <select
-                        className="form-select form-select-sm"
-                        value={a.status}
-                        onChange={(e) =>
-                          handleStatusChange(a._id, e.target.value)
-                        }
-                        disabled={updating !== null}
-                      >
-                        <option value="completed">Completato</option>
-                        <option value="cancelled">Annullato</option>
-                        <option value="no-show">Non presentato</option>
-                      </select>
-                    ) : (
-                      <>
-                        {a.status === "active" && (
-                          <button
-                            className="btn btn-sm btn-outline-danger mb-1"
-                            onClick={() =>
-                              handleStatusChange(a._id, "cancelled")
-                            }
-                            disabled={updating !== null}
-                          >
-                            {updating === a._id ? "..." : "Annulla"}
-                          </button>
-                        )}
-
-                        {a.status === "cancelled" && (
-                          <button
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => handleStatusChange(a._id, "active")}
-                            disabled={updating !== null}
-                          >
-                            {updating === a._id ? "..." : "Riattiva"}
-                          </button>
-                        )}
-
-                        {(a.status === "completed" || a.status === "no-show") && (
-                          <span className="text-muted">Nessuna azione</span>
-                        )}
-                      </>
-                    )}
-                  </td>
+          {/* Tabella su tablet e desktop */}
+          <div className="table-responsive d-none d-md-block">
+            <table className="table table-striped table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Ora</th>
+                  <th>Cliente</th>
+                  <th>Contatto</th>
+                  <th>Servizio</th>
+                  <th>Prezzo</th>
+                  <th>Stato</th>
+                  <th>Azioni</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {appointments.map((a) => (
+                  <tr key={a._id}>
+                    <td>{formatDateShort(a.start)}</td>
+
+                    <td>
+                      {formatTime(a.start)} - {formatTime(a.end)}
+                    </td>
+
+                    <td>{a.userId?.name || "—"}</td>
+
+                    <td>
+                      {a.userId?.phone ? (
+                        <a href={`tel:${a.userId.phone}`}>{a.userId.phone}</a>
+                      ) : (
+                        <a href={`mailto:${a.userId?.email}`}>
+                          {a.userId?.email || "—"}
+                        </a>
+                      )}
+                    </td>
+
+                    <td>{a.serviceId?.name || "—"}</td>
+
+                    <td>{formatPrice(a.serviceId?.price)}</td>
+
+                    <td>
+                      <span
+                        className={`badge ${
+                          STATUS_BADGES[a.status] || "bg-secondary"
+                        }`}
+                      >
+                        {STATUS_LABELS[a.status] || a.status}
+                      </span>
+                    </td>
+
+                    <td>{renderActions(a)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

@@ -81,6 +81,24 @@ export default function Services() {
     }
   };
 
+  // Azioni di un servizio: condivise tra la tabella desktop e le card mobile
+  const renderActions = (s) => (
+    <>
+      <button
+        className="btn btn-sm btn-outline-secondary me-2"
+        onClick={() => setEditing({ ...s })}
+      >
+        Modifica
+      </button>
+      <button
+        className="btn btn-sm btn-outline-danger"
+        onClick={() => handleDelete(s._id)}
+      >
+        Disattiva
+      </button>
+    </>
+  );
+
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={loadData} />;
 
@@ -130,8 +148,27 @@ export default function Services() {
         </div>
       </form>
 
-      {/* Tabella */}
-      <div className="table-responsive">
+      {/* Elenco servizi: card su mobile, tabella da tablet in su */}
+      {/* Card su mobile */}
+      <div className="d-md-none">
+        {services.map((s) => (
+          <div className="card mb-2" key={s._id}>
+            <div className="card-body py-2">
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <strong>{s.name}</strong>
+                <span className="fw-bold">{formatPrice(s.price)}</span>
+              </div>
+              <div className="small text-muted mb-2">
+                Durata: {s.durationMinutes} min
+              </div>
+              {renderActions(s)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabella su tablet e desktop */}
+      <div className="table-responsive d-none d-md-block">
         <table className="table table-striped">
           <thead>
             <tr>
@@ -147,20 +184,7 @@ export default function Services() {
                 <td>{s.name}</td>
                 <td>{formatPrice(s.price)}</td>
                 <td>{s.durationMinutes} min</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-outline-secondary me-2"
-                    onClick={() => setEditing({ ...s })}
-                  >
-                    Modifica
-                  </button>
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => handleDelete(s._id)}
-                  >
-                    Disattiva
-                  </button>
-                </td>
+                <td>{renderActions(s)}</td>
               </tr>
             ))}
           </tbody>

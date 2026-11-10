@@ -22,7 +22,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand" to="/" onClick={closeMenu}>
-          Barber Booking
+          DacciUnTaglio
         </Link>
 
         {/* Hamburger: visibile solo sotto il breakpoint lg */}

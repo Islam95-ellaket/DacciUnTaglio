@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useLocation } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
@@ -7,6 +8,8 @@ import { formatPrice, formatDate, formatTime, getRomeDate } from "../utils/forma
 
 export default function BookingFlow() {
   const { token } = useContext(AuthContext);
+  const location = useLocation(); 
+  const preset = location.state?.service;
 
   // --- Step 1: servizi ---
   const {
@@ -17,8 +20,8 @@ export default function BookingFlow() {
   } = useFetch("/services");
 
   // --- Stati del flusso ---
-  const [step, setStep] = useState(1);
-  const [selectedService, setSelectedService] = useState(null);
+  const [step, setStep] = useState(preset ? 2 : 1);
+  const [selectedService, setSelectedService] = useState(preset ?? null);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -220,9 +223,8 @@ export default function BookingFlow() {
             {slots.map((slot) => (
               <button
                 key={slot}
-                className={`btn ${
-                  selectedSlot === slot ? "btn-primary" : "btn-outline-primary"
-                }`}
+                className={`btn ${selectedSlot === slot ? "btn-primary" : "btn-outline-primary"
+                  }`}
                 onClick={() => {
                   setSelectedSlot(slot);
                   setMessage("");

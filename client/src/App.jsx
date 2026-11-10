@@ -24,16 +24,6 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <div className="alert alert-success">
-                  Accesso effettuato. Benvenuto nella tua area personale.
-                </div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/admin-area"
             element={
               <ProtectedRoute role="admin">

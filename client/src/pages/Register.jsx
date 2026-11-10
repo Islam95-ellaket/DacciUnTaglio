@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 
@@ -20,7 +20,7 @@ export default function Register() {
     setError(null);
     try {
       await register(name, email, password, phone);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -89,6 +89,9 @@ export default function Register() {
             {loading ? "Registrazione in corso..." : "Registrati"}
           </button>
         </form>
+        <p className="text-center mt-3">
+          Hai già un account? <Link to="/login">Accedi</Link>
+        </p>
       </div>
     </div>
   );

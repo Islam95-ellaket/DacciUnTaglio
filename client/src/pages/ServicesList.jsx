@@ -1,10 +1,13 @@
 import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
 import { formatPrice } from "../utils/format.js";
+import { useNavigate } from "react-router-dom";
 
 export default function ServicesList() {
   const { data: services, loading, error, refetch: loadServices } =
     useFetch("/services");
+
+  const navigate = useNavigate();
 
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={loadServices} />;
@@ -20,6 +23,9 @@ export default function ServicesList() {
                 <h5 className="card-title">{s.name}</h5>
                 <p className="card-text">Durata: {s.durationMinutes} min</p>
                 <p className="fw-bold">{formatPrice(s.price)}</p>
+                <button className="btn btn-primary" onClick={() => navigate("/booking", { state: { service: s } })}>
+                  Prenota
+                </button>
               </div>
             </div>
           </div>

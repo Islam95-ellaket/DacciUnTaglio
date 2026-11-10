@@ -148,6 +148,10 @@ export const cancelAppointment = async (req, res, next) => {
             throw new ApiError(400, "Appuntamento già annullato o completato");
         }
 
+        if (appointment.start.getTime() - Date.now() < 24 * 60 * 60 * 1000) {
+            throw new ApiError(400, "L'appuntamento non può essere annullato a meno di 24 ore dall'orario di inizio ");
+        }
+
         appointment.status = "cancelled";
         await appointment.save();
 
