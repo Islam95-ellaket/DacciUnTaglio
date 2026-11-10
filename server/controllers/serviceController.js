@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { checkValidation } from "../utils/validate.js";
 import Service from "../models/Service.js";
 import Shop from "../models/Shop.js";
 import ApiError from "../utils/ApiError.js";
@@ -14,10 +14,7 @@ export const getServices = async (req, res, next) => {
 
 export const createService = async (req, res, next) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            throw new ApiError(400, errors.array()[0].msg);
-        }
+        checkValidation(req);
 
         const shop = await Shop.findOne();
         if (!shop) {
@@ -40,10 +37,7 @@ export const createService = async (req, res, next) => {
 
 export const updateService = async (req, res, next) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            throw new ApiError(400, errors.array()[0].msg);
-        }
+        checkValidation(req);
 
         // Aggiornamento parziale: solo i campi presenti nel body
         const updates = {};

@@ -13,10 +13,17 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Errore interno del server";
 
-  // Chiave duplicata MongoDB (es. due utenti con la stessa email)
+  // Chiave duplicata MongoDB: distingue email duplicata da slot duplicato
   if (err.code === 11000) {
-    statusCode = 409;
-    message = "Email già registrata";
+        statusCode = 409;
+        const duplicatedField = Object.keys(err.keyPattern || {})[0];
+        if (duplicatedField === "email") {
+            message = "Email già registrata";
+        } else if (duplicatedField === "start" || duplicatedField === "shopId") {
+            message = "Slot già prenotato";
+        } else {
+            message = "Valore già esistente";
+        }
   }
 
   // Validazione dello schema Mongoose fallita

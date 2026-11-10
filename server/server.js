@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js"
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import availabilityRoutes from "./routes/availabilityRoutes.js";
+import shopRoutes from "./routes/shopRoutes.js";
 import errorHandler, { notFound } from "./middleware/errorHandler.js";
 
 // Carica le variabili d'ambiente
@@ -30,6 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/services", serviceRoutes)
 app.use("/api/appointments", appointmentRoutes)
 app.use("/api/availability", availabilityRoutes);
+app.use("/api/shop", shopRoutes);
 
 // 404 per le route non gestite (deve stare DOPO tutte le route)
 app.use(notFound);

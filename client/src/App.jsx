@@ -10,6 +10,7 @@ import BookingFlow from "./pages/BookingFlow";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAppointments from "./pages/AdminAppointments";
+import AdminShopHours from "./pages/AdminShopHours";
 
 
 
@@ -54,6 +55,14 @@ export default function App() {
             element={
               <ProtectedRoute role="admin">
                 <AdminAppointments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orari"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminShopHours />
               </ProtectedRoute>
             }
           />

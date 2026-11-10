@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { validationResult } from "express-validator";
 import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
+import { checkValidation } from "../utils/validate.js";
 
 // JWT valido 7 giorni con id e ruolo dell'utente
 const generateToken = (user) =>
@@ -21,13 +21,6 @@ const authResponse = (res, status, user) => {
             role: user.role,
         },
     });
-};
-
-const checkValidation = (req) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        throw new ApiError(400, errors.array()[0].msg);
-    }
 };
 
 export const register = async (req, res, next) => {

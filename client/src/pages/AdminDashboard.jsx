@@ -34,6 +34,20 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        <div className="col-md-6">
+          <div className="card h-100">
+            <div className="card-body text-center">
+              <h5 className="card-title">🕐 Orari di apertura</h5>
+              <p className="card-text">
+                Imposta gli orari settimanali del negozio.
+              </p>
+              <Link to="/admin/orari" className="btn btn-primary">
+                Vai agli orari
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
