@@ -2,12 +2,7 @@ import { useState, useEffect, useContext, useCallback } from "react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 import { apiFetch } from "../api/http.js";
-import {
-  formatPrice,
-  formatTime,
-  formatDateShort,
-  getRomeDate,
-} from "../utils/format.js";
+import { getRomeDate, formatPrice, formatDateShort, formatTime } from "../utils/format.js";
 import { APPOINTMENT_STATUSES, STATUS_LABELS, STATUS_BADGES } from "../utils/constants.js";
 
 const UNAUTHORIZED_MESSAGE = "Sessione scaduta. Effettua nuovamente l'accesso.";

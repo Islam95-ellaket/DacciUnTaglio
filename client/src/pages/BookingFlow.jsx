@@ -11,7 +11,6 @@ export default function BookingFlow() {
   const location = useLocation(); 
   const preset = location.state?.service;
 
-  // --- Step 1: servizi ---
   const {
     data: services,
     loading: servicesLoading,
@@ -19,7 +18,6 @@ export default function BookingFlow() {
     refetch: loadServices,
   } = useFetch("/services");
 
-  // --- Stati del flusso ---
   const [step, setStep] = useState(preset ? 2 : 1);
   const [selectedService, setSelectedService] = useState(preset ?? null);
   const [date, setDate] = useState("");
@@ -35,7 +33,6 @@ export default function BookingFlow() {
 
   const today = getRomeDate();
 
-  // Torna allo step 1 ripulendo lo stato degli step successivi
   const goToStep1 = () => {
     setStep(1);
     setSelectedService(null);
@@ -46,7 +43,6 @@ export default function BookingFlow() {
     setMessage("");
   };
 
-  // --- Step 2: carica slot quando cambia la data o il servizio ---
   const loadSlots = async () => {
     if (!date || !selectedService) return;
     setSlotsLoading(true);
@@ -70,7 +66,6 @@ export default function BookingFlow() {
     }
   }, [date, selectedService]);
 
-  // --- Step 3: conferma prenotazione ---
   const handleConfirm = async () => {
     if (!selectedService || !selectedSlot) return;
 
@@ -95,15 +90,12 @@ export default function BookingFlow() {
       }
 
       if (err.status === 409) {
-        // Ricarica gli slot e torna allo step 2
         try {
           const fresh = await apiFetch(
             `/availability?serviceId=${selectedService._id}&date=${date}`
           );
           setSlots(fresh);
-        } catch {
-          // se il ricarico fallisce, l'utente può cambiare data per riprovare
-        }
+        } catch {}
         setSelectedSlot(null);
         setStep(2);
         setMessage(

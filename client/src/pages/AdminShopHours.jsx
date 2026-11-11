@@ -5,8 +5,6 @@ import useFetch from "../hooks/useFetch";
 import { apiFetch } from "../api/http.js";
 import { Pencil, Trash2 } from "lucide-react";
 
-// Ordine di visualizzazione: da lunedì a domenica.
-// dayOfWeek segue la convenzione JS (0 = domenica, 1 = lunedì, ..., 6 = sabato)
 const DAYS = [
   { dayOfWeek: 1, label: "Lunedì" },
   { dayOfWeek: 2, label: "Martedì" },
@@ -17,7 +15,6 @@ const DAYS = [
   { dayOfWeek: 0, label: "Domenica" },
 ];
 
-// Giorno presente in workingHours → aperto con i suoi orari; assente → chiuso
 const buildInitialHours = (shop) => {
   const initial = {};
   for (const d of DAYS) {
@@ -36,7 +33,6 @@ export default function AdminShopHours() {
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={refetch} />;
 
-  // Le key su updatedAt fanno rimontare i form (e reinizializzarli) se i dati cambiano
   return (
     <>
       <HoursForm key={`hours-${shop.updatedAt ?? "shop"}`} shop={shop} token={token} />
@@ -65,14 +61,13 @@ function HoursForm({ shop, token }) {
     setSaving(true);
     setMessage(null);
 
-    // Si inviano solo i giorni aperti: gli altri equivalgono a "chiuso"
-    const workingHours = DAYS.filter((d) => hours[d.dayOfWeek].isOpen).map(
-      (d) => ({
+    const workingHours = DAYS
+      .filter((d) => hours[d.dayOfWeek]?.isOpen)
+      .map((d) => ({
         dayOfWeek: d.dayOfWeek,
-        open: hours[d.dayOfWeek].open,
-        close: hours[d.dayOfWeek].close,
-      }),
-    );
+        open: hours[d.dayOfWeek]?.open,
+        close: hours[d.dayOfWeek]?.close,
+      }));
 
     try {
       await apiFetch("/shop/working-hours", {

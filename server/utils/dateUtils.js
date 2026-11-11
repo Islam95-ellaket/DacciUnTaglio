@@ -25,3 +25,23 @@ export function nextDate(date) {
         String(next.getUTCDate()).padStart(2, "0"),
     ].join("-");
 }
+
+/**
+ * Converte un oggetto Date UTC nella stringa YYYY-MM-DD locale del negozio.
+ * Essenziale per ricalcolare la disponibilità sulla data corretta.
+ */
+export function getLocalDateString(utcDate, timeZone = "Europe/Rome") {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(utcDate);
+
+  const year = parts.find((p) => p.type === "year").value;
+  const month = parts.find((p) => p.type === "month").value;
+  const day = parts.find((p) => p.type === "day").value;
+
+  return `${year}-${month}-${day}`;
+}
+
