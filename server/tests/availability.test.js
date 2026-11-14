@@ -4,9 +4,9 @@ import { fromZonedTime } from "date-fns-tz";
 import Shop from "../models/Shop.js";
 import Service from "../models/Service.js";
 import Appointment from "../models/Appointment.js";
-import { getAvailableSlots } from "../services/availabilityService.js";
-import { nextDate } from "../utils/dateUtils.js";
-import { TIMEZONE, futureLocalDate, slotISO } from "./helpers.js";
+import { getAvailableSlots, getAvailableDaysInMonth } from "../services/availabilityService.js";
+import { nextDate, getLocalDateString } from "../utils/dateUtils.js";
+import { TIMEZONE, weekdayOf, futureLocalDate, slotISO } from "./helpers.js";
 
 const makeAppointment = async (date, hhmm, status = "active", durationMin = 45) => {
   const start = fromZonedTime(`${date}T${hhmm}:00`, TIMEZONE);
@@ -172,5 +172,61 @@ describe("getAvailableSlots — griglia slot", () => {
   it("lancia 404 se il servizio non esiste", async () => {
     const missingId = new mongoose.Types.ObjectId();
     await expect(getAvailableSlots(missingId, futureLocalDate(2))).rejects.toMatchObject({ statusCode: 404 });
+  });
+});
+
+describe("getAvailableDaysInMonth — calendario mensile", () => {
+  // Mese di riferimento: quello di una data locale almeno 10 giorni nel futuro
+  const refMonth = futureLocalDate(3, 10).slice(0, 7);
+  const todayStr = getLocalDateString(new Date(), TIMEZONE);
+
+  const daysOfMonth = (month) => {
+    const [y, m] = month.split("-").map(Number);
+    const count = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    return Array.from({ length: count }, (_, i) => `${month}-${String(i + 1).padStart(2, "0")}`);
+  };
+
+  it("ritorna i giorni con slot: tutti i lun–sab futuri, nessuna domenica, nessun giorno passato", async () => {
+    const expected = daysOfMonth(refMonth).filter((d) => d > todayStr && weekdayOf(d) !== 0);
+
+    const result = await getAvailableDaysInMonth(service._id, refMonth);
+
+    expect(Array.isArray(result)).toBe(true);
+    for (const day of result) {
+      expect(day).toMatch(new RegExp(`^${refMonth}-\\d{2}$`));
+      expect(weekdayOf(day)).not.toBe(0); // domenica mai inclusa
+    }
+    for (const day of expected) {
+      expect(result).toContain(day); // ogni lun–sab futuro ha almeno uno slot
+    }
+    for (const day of daysOfMonth(refMonth).filter((d) => d < todayStr)) {
+      expect(result).not.toContain(day); // passato mai incluso
+    }
+  });
+
+  it("un blocco che copre tutto il giorno esclude quel giorno dai risultati", async () => {
+    const target = daysOfMonth(refMonth).find((d) => d > todayStr && weekdayOf(d) === 2);
+
+    await Shop.updateOne(
+      { _id: shop._id },
+      {
+        $push: {
+          blockedSlots: {
+            start: fromZonedTime(`${target}T00:00:00`, TIMEZONE),
+            end: fromZonedTime(`${nextDate(target)}T00:00:00`, TIMEZONE),
+            reason: "Giornata di prova bloccata",
+          },
+        },
+      }
+    );
+
+    const result = await getAvailableDaysInMonth(service._id, refMonth);
+    expect(result).not.toContain(target);
+  });
+
+  it("lancia 400 per mese non valido o ID servizio non valido", async () => {
+    await expect(getAvailableDaysInMonth(service._id, "11-2026")).rejects.toMatchObject({ statusCode: 400 });
+    await expect(getAvailableDaysInMonth(service._id, "2026-13")).rejects.toMatchObject({ statusCode: 400 });
+    await expect(getAvailableDaysInMonth("id-non-valido", refMonth)).rejects.toMatchObject({ statusCode: 400 });
   });
 });

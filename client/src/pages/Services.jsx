@@ -4,7 +4,14 @@ import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
 import { apiFetch } from "../api/http.js";
 import { formatPrice } from "../utils/format.js";
+import ServiceActions from "../components/services/ServiceActions.jsx";
+import ServiceEditModal from "../components/services/ServiceEditModal.jsx";
 
+/**
+ * Pagina admin "Gestione servizi": creazione, modifica e disattivazione.
+ * Elenco responsive (card su mobile, tabella da tablet in su);
+ * la disattivazione è uno soft delete lato backend (isActive: false).
+ */
 export default function Services() {
   const { token } = useContext(AuthContext);
 
@@ -81,24 +88,6 @@ export default function Services() {
     }
   };
 
-  // Azioni di un servizio: condivise tra la tabella desktop e le card mobile
-  const renderActions = (s) => (
-    <>
-      <button
-        className="btn btn-sm btn-outline-secondary me-2"
-        onClick={() => setEditing({ ...s })}
-      >
-        Modifica
-      </button>
-      <button
-        className="btn btn-sm btn-outline-danger"
-        onClick={() => handleDelete(s._id)}
-      >
-        Disattiva
-      </button>
-    </>
-  );
-
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={loadData} />;
 
@@ -148,7 +137,6 @@ export default function Services() {
         </div>
       </form>
 
-      {/* Elenco servizi: card su mobile, tabella da tablet in su */}
       {/* Card su mobile */}
       <div className="d-md-none">
         {services.map((s) => (
@@ -161,7 +149,7 @@ export default function Services() {
               <div className="small text-muted mb-2">
                 Durata: {s.durationMinutes} min
               </div>
-              {renderActions(s)}
+              <ServiceActions service={s} onEdit={setEditing} onDelete={handleDelete} />
             </div>
           </div>
         ))}
@@ -184,84 +172,21 @@ export default function Services() {
                 <td>{s.name}</td>
                 <td>{formatPrice(s.price)}</td>
                 <td>{s.durationMinutes} min</td>
-                <td>{renderActions(s)}</td>
+                <td>
+                  <ServiceActions service={s} onEdit={setEditing} onDelete={handleDelete} />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Modal modifica (Bootstrap, gestito con stato) */}
-      {editing && (
-        <div className="modal d-block modal-overlay-dark" tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <form onSubmit={handleUpdate}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Modifica servizio</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setEditing(null)}
-                  />
-                </div>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Nome</label>
-                    <input
-                      className="form-control"
-                      value={editing.name}
-                      onChange={(e) =>
-                        setEditing({ ...editing, name: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Prezzo (€)</label>
-                    <input
-                      className="form-control"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={editing.price}
-                      onChange={(e) =>
-                        setEditing({ ...editing, price: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Durata (min)</label>
-                    <input
-                      className="form-control"
-                      type="number"
-                      min="1"
-                      value={editing.durationMinutes}
-                      onChange={(e) =>
-                        setEditing({ ...editing, durationMinutes: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setEditing(null)}
-                  >
-                    Annulla
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Salva
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      <ServiceEditModal
+        editing={editing}
+        onChange={setEditing}
+        onClose={() => setEditing(null)}
+        onSubmit={handleUpdate}
+      />
     </div>
   );
 }

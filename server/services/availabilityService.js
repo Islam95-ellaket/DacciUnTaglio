@@ -126,3 +126,33 @@ export const getAvailableSlots = async (serviceId, date) => {
 
   return availableSlots;
 };
+
+/**
+ * Ritorna i giorni di un mese (formato YYYY-MM) con almeno uno slot
+ * disponibile per il servizio richiesto. Alimenta il calendario mensile
+ * del cliente: i giorni chiusi, pieni o passati non compaiono.
+ */
+export const getAvailableDaysInMonth = async (serviceId, month) => {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+    throw new ApiError(400, "Mese non valido (formato YYYY-MM richiesto)");
+  }
+
+  if (!mongoose.isValidObjectId(serviceId)) {
+    throw new ApiError(400, "ID del servizio non valido");
+  }
+
+  const [year, monthNum] = month.split("-").map(Number);
+  const daysInMonth = new Date(Date.UTC(year, monthNum, 0)).getUTCDate();
+
+  const availableDays = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${month}-${String(day).padStart(2, "0")}`;
+    const slots = await getAvailableSlots(serviceId, dateStr);
+    if (slots.length > 0) {
+      availableDays.push(dateStr);
+    }
+  }
+
+  return availableDays;
+};

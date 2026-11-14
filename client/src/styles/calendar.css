@@ -1,0 +1,91 @@
+/* Calendario mensile dello step 2 di prenotazione (MonthCalendar). */
+
+.month-calendar {
+  max-width: 420px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-weekday {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #6c757d;
+  padding: 4px 0;
+}
+
+.cal-day {
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  background: #fff;
+  padding: 7px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: #212529;
+}
+
+.cal-day:disabled {
+  cursor: default;
+}
+
+.cal-day-available {
+  background: var(--brand-primary-soft);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cal-day-available:hover {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.cal-day-selected,
+.cal-day-selected:hover {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.cal-day-past,
+.cal-day-other,
+.cal-day-closed {
+  background: var(--surface-muted);
+  border-color: var(--surface-border-soft);
+  color: var(--text-muted-soft);
+}
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.calendar-legend .legend-dot:first-child {
+  margin-left: 0;
+}
+
+.legend-available {
+  background: var(--brand-primary-soft);
+  border: 1px solid var(--brand-primary);
+}
+
+.legend-closed {
+  background: var(--surface-muted);
+  border: 1px solid var(--surface-border-soft);
+}

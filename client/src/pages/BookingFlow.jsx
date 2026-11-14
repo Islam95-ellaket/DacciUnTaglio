@@ -1,15 +1,22 @@
 import { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
 import { apiFetch } from "../api/http.js";
-import { formatPrice, formatDate, formatTime, getRomeDate } from "../utils/format.js";
+import StepServices from "../components/booking/StepServices.jsx";
+import StepSchedule from "../components/booking/StepSchedule.jsx";
+import StepConfirm from "../components/booking/StepConfirm.jsx";
+import ConfirmationScreen from "../components/booking/ConfirmationScreen.jsx";
 
+/**
+ * Orchestratore del flusso di prenotazione (3 step + schermata di conferma).
+ * Le schermate sono componenti separati in components/booking/;
+ * qui vivono solo lo stato condiviso, gli handler e le chiamate API.
+ */
 export default function BookingFlow() {
   const { token } = useContext(AuthContext);
-  const location = useLocation(); 
-  const preset = location.state?.service;
+  const location = useLocation();
+  const preset = location.state?.service; // pre-selezione dal bottone "Prenota" delle card
 
   const {
     data: services,
@@ -30,8 +37,6 @@ export default function BookingFlow() {
   const [confirming, setConfirming] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [message, setMessage] = useState("");
-
-  const today = getRomeDate();
 
   const goToStep1 = () => {
     setStep(1);
@@ -90,6 +95,7 @@ export default function BookingFlow() {
       }
 
       if (err.status === 409) {
+        // Slot appena occupato da un altro cliente: ricarico gli slot aggiornati
         try {
           const fresh = await apiFetch(
             `/availability?serviceId=${selectedService._id}&date=${date}`
@@ -118,183 +124,76 @@ export default function BookingFlow() {
   // --- Schermata di conferma ---
   if (confirmed) {
     return (
-      <div className="text-center mt-5">
-        <div className="alert alert-success">
-          <h4>✅ Prenotazione confermata!</h4>
-          <p>
-            {selectedService.name} — {formatDate(selectedSlot)} alle{" "}
-            {formatTime(selectedSlot)}
-          </p>
-          <p className="fw-bold">{formatPrice(selectedService.price)}</p>
-        </div>
-        <button className="btn btn-primary" onClick={resetAll}>
-          Nuova prenotazione
-        </button>
-      </div>
+      <ConfirmationScreen
+        service={selectedService}
+        slot={selectedSlot}
+        onReset={resetAll}
+      />
     );
   }
 
   // --- Step 1: scelta servizio ---
   if (step === 1) {
-    if (servicesLoading)
-      return <div className="text-center mt-5">Caricamento...</div>;
-    if (servicesError) {
-      return <ErrorAlert message={servicesError} onRetry={loadServices} />;
-    }
     return (
-      <div>
-        <h2 className="mb-4">Scegli un servizio</h2>
-        <div className="row g-3">
-          {services.map((s) => (
-            <div className="col-md-4" key={s._id}>
-              <div
-                className="card h-100 clickable-card"
-                onClick={() => {
-                  setSelectedService(s);
-                  setMessage("");
-                  setStep(2);
-                }}
-              >
-                <div className="card-body text-center">
-                  <h5 className="card-title">{s.name}</h5>
-                  <p className="card-text">Durata: {s.durationMinutes} min</p>
-                  <p className="fw-bold">{formatPrice(s.price)}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <StepServices
+        services={services}
+        loading={servicesLoading}
+        error={servicesError}
+        onRetry={loadServices}
+        onSelect={(service) => {
+          setSelectedService(service);
+          setMessage("");
+          setStep(2);
+        }}
+      />
     );
   }
 
-  // --- Step 2: scelta data e slot ---
+  // --- Step 2: scelta data e orario ---
   if (step === 2) {
     return (
-      <div>
-        <h2 className="mb-3">Scegli data e orario</h2>
-        <p className="text-muted">
-          Servizio: <strong>{selectedService.name}</strong> (
-          {selectedService.durationMinutes} min)
-        </p>
-
-        {!token && (
-          <div className="alert alert-warning">
-            Devi effettuare l'accesso per completare la prenotazione.
-          </div>
-        )}
-
-        {message && <div className="alert alert-warning">{message}</div>}
-        <ErrorAlert message={slotsError} onRetry={loadSlots} />
-
-        <div className="mb-3">
-          <label className="form-label">Data</label>
-          <input
-            type="date"
-            className="form-control"
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value);
-              setSelectedSlot(null);
-              setMessage("");
-            }}
-            min={today}
-          />
-        </div>
-
-        {slotsLoading && <div className="text-center">Caricamento slot...</div>}
-
-        {!slotsLoading && !slotsError && date && slots.length === 0 && (
-          <div className="alert alert-info">
-            Nessuno slot disponibile per questa data.
-          </div>
-        )}
-
-        {!slotsLoading && slots.length > 0 && (
-          <div className="d-flex flex-wrap gap-2 mb-3">
-            {slots.map((slot) => (
-              <button
-                key={slot}
-                className={`btn ${selectedSlot === slot ? "btn-primary" : "btn-outline-primary"
-                  }`}
-                onClick={() => {
-                  setSelectedSlot(slot);
-                  setMessage("");
-                }}
-              >
-                {formatTime(slot)}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="d-flex gap-2">
-          <button className="btn btn-secondary" onClick={goToStep1}>
-            Indietro
-          </button>
-          <button
-            className="btn btn-primary"
-            disabled={!selectedSlot || !token}
-            onClick={() => {
-              setMessage("");
-              setStep(3);
-            }}
-          >
-            Avanti
-          </button>
-        </div>
-      </div>
+      <StepSchedule
+        service={selectedService}
+        token={token}
+        date={date}
+        slots={slots}
+        slotsLoading={slotsLoading}
+        slotsError={slotsError}
+        selectedSlot={selectedSlot}
+        message={message}
+        onSelectDate={(newDate) => {
+          setDate(newDate);
+          setSelectedSlot(null);
+          setMessage("");
+        }}
+        onSelectSlot={(slot) => {
+          setSelectedSlot(slot);
+          setMessage("");
+        }}
+        onRetrySlots={loadSlots}
+        onBack={goToStep1}
+        onNext={() => {
+          setMessage("");
+          setStep(3);
+        }}
+      />
     );
   }
 
   // --- Step 3: riepilogo e conferma ---
   if (step === 3) {
     return (
-      <div>
-        <h2 className="mb-3">Conferma prenotazione</h2>
-
-        <ErrorAlert message={message} />
-
-        <div className="card mb-3">
-          <div className="card-body">
-            <p>
-              <strong>Servizio:</strong> {selectedService.name}
-            </p>
-            <p>
-              <strong>Durata:</strong> {selectedService.durationMinutes} min
-            </p>
-            <p>
-              <strong>Data:</strong> {formatDate(selectedSlot)}
-            </p>
-            <p>
-              <strong>Ora:</strong> {formatTime(selectedSlot)}
-            </p>
-            <p className="fw-bold">
-              <strong>Prezzo:</strong> {formatPrice(selectedService.price)}
-            </p>
-          </div>
-        </div>
-
-        <div className="d-flex gap-2">
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              setMessage("");
-              setStep(2);
-            }}
-            disabled={confirming}
-          >
-            Indietro
-          </button>
-          <button
-            className="btn btn-success"
-            onClick={handleConfirm}
-            disabled={confirming}
-          >
-            {confirming ? "Conferma in corso..." : "Conferma prenotazione"}
-          </button>
-        </div>
-      </div>
+      <StepConfirm
+        service={selectedService}
+        slot={selectedSlot}
+        message={message}
+        confirming={confirming}
+        onBack={() => {
+          setMessage("");
+          setStep(2);
+        }}
+        onConfirm={handleConfirm}
+      />
     );
   }
 

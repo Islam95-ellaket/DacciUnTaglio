@@ -1,0 +1,11 @@
+/* Classi riutilizzate da più componenti. */
+
+/* Card cliccabili (scelta servizio, dashboard admin). */
+.clickable-card {
+  cursor: pointer;
+}
+
+/* Sfondo scuro dietro i modal Bootstrap aperti via stato. */
+.modal-overlay-dark {
+  background-color: rgba(0, 0, 0, 0.5);
+}
