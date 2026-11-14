@@ -39,7 +39,7 @@ async function seed() {
 
 
         await Shop.create({
-            name: "Barber Shop",
+            name: "DacciUnTaglio",
             address: "Via Roma 1, Milano",
             phone: "+39 02 1234567",
             timezone: "Europe/Rome",

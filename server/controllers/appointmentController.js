@@ -6,6 +6,8 @@ import { getAvailableSlots } from "../services/availabilityService.js";
 import { isValidDateString, nextDate, getLocalDateString } from "../utils/dateUtils.js";
 import ApiError from "../utils/ApiError.js";
 import { fromZonedTime } from "date-fns-tz";
+import User from "../models/User.js";
+import { sendBookingConfirmationEmail } from "../services/emailService.js";
 
 /**
  * Helper per aggiornare automaticamente gli appuntamenti passati allo stato "completed".
@@ -100,6 +102,17 @@ export const createAppointment = async (req, res, next) => {
       end,
       status: "active",
     });
+
+    // 7. Email di conferma: try/catch SEPARATO — la mail è un effetto collaterale:
+    //    se fallisce, la prenotazione (già salvata) resta valida
+    try {
+      const user = await User.findById(req.user.id);
+      if (user) {
+        await sendBookingConfirmationEmail({ user, service, appointment, shop });
+      }
+    } catch (emailError) {
+      console.error("⚠️ Email di conferma non inviata:", emailError.message);
+    }
 
     res.status(201).json(appointment);
   } catch (error) {
