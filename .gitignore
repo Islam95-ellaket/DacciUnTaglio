@@ -19,6 +19,3 @@ dist/
 build/
 *.log
 
-# Cartelle esterne/strumenti
-freellmapi/
-
