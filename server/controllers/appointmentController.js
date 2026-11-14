@@ -55,16 +55,31 @@ export const createAppointment = async (req, res, next) => {
     const duration = Number(service.durationMinutes);
     const end = new Date(startDate.getTime() + duration * 60 * 1000);
     const timeZone = shop.timezone || "Europe/Rome";
-
-    // 3. Verifica disponibilità reale
     const localDate = getLocalDateString(startDate, timeZone);
+
+    // 3. Limite prenotazioni: max N appuntamenti "active" per cliente nello stesso giorno (fuso negozio)
+    const maxBookingsPerDay = Number(shop.maxBookingsPerDay) || 1;
+    const dayStart = fromZonedTime(`${localDate}T00:00:00`, timeZone);
+    const dayEnd = fromZonedTime(`${nextDate(localDate)}T00:00:00`, timeZone);
+
+    const activeBookings = await Appointment.countDocuments({
+      userId: req.user.id,
+      status: "active",
+      start: { $gte: dayStart, $lt: dayEnd },
+    });
+
+    if (activeBookings >= maxBookingsPerDay) {
+      throw new ApiError(403, `hai già un'appuntamento in questa data`);
+    }
+
+    // 4. Verifica disponibilità reale
     const availableSlots = await getAvailableSlots(serviceId, localDate);
 
     if (!availableSlots.includes(startDate.toISOString())) {
       throw new ApiError(409, "Orario non più disponibile");
     }
 
-    // 4. Protezione finale dalle Race Condition (sovrapposizione temporale)
+    // 5. Protezione finale dalle Race Condition (sovrapposizione temporale)
     const conflict = await Appointment.findOne({
       shopId: shop._id,
       status: "active",
@@ -76,7 +91,7 @@ export const createAppointment = async (req, res, next) => {
       throw new ApiError(409, "Slot già prenotato");
     }
 
-    // 5. Creazione
+    // 6. Creazione
     const appointment = await Appointment.create({
       shopId: shop._id,
       serviceId: service._id,

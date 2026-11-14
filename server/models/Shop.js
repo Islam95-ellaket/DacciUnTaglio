@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const workingHourSchema = new mongoose.Schema(
     {
@@ -62,6 +62,10 @@ const shopSchema = new mongoose.Schema(
         slotInterval: {
             type: Number,
             default: 10,
+        },
+        maxBookingsPerDay: {
+            type: Number,
+            default: 1,
         },
         workingHours: [workingHourSchema],
         blockedSlots: [blockedSlotSchema],
