@@ -54,9 +54,6 @@ Principi guida:
 ```
 Cliente                Backend (availabilityService / appointmentController)
    │                    │
-   │─ GET /availability/month ─▶ giorni del mese con ≥1 slot libero
-   │◀─ ["2026-11-17", ...] ──    (alimenta il calendario)
-   │
    │─ GET /availability?serviceId&date ─▶ griglia di slot ISO (UTC)
    │◀─ ["2026-11-17T08:00:00.000Z", ...]
    │

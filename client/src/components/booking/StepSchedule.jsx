@@ -1,9 +1,8 @@
 import ErrorAlert from "../ErrorAlert.jsx";
-import MonthCalendar from "../MonthCalendar.jsx";
-import { formatTime } from "../../utils/format.js";
+import { formatTime, getRomeDate } from "../../utils/format.js";
 
-// Step 2 del booking: scelta del giorno (calendario mensile) e dell'orario
-// (griglia di slot caricata dal backend per il giorno selezionato).
+// Step 2 del booking: scelta della data (picker nativo) e dell'orario
+// (griglia di slot caricata dal backend per la data selezionata).
 export default function StepSchedule({
   service,
   token,
@@ -19,6 +18,8 @@ export default function StepSchedule({
   onBack,
   onNext,
 }) {
+  const today = getRomeDate(); // YYYY-MM-DD nel fuso del negozio: limite del picker
+
   return (
     <div>
       <h2 className="mb-3">Scegli data e orario</h2>
@@ -37,12 +38,13 @@ export default function StepSchedule({
       <ErrorAlert message={slotsError} onRetry={onRetrySlots} />
 
       <div className="mb-3">
-        <label className="form-label">Scegli il giorno</label>
-        <MonthCalendar
-          key={service._id}
-          serviceId={service._id}
-          selectedDate={date}
-          onSelectDate={onSelectDate}
+        <label className="form-label">Data</label>
+        <input
+          type="date"
+          className="form-control"
+          value={date}
+          onChange={(e) => onSelectDate(e.target.value)}
+          min={today}
         />
       </div>
 

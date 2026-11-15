@@ -50,7 +50,9 @@ const { data, loading, error, refetch } = useFetch("/appointments/mine", { token
    `useFetch` gestisce loading/error/refetch di una GET).
 3. Se dentro un `useEffect` fai chiamate API, ricorda la regola lint
    `react-hooks/set-state-in-effect`: niente setState sincroni nel corpo
-   dell'effect — usa callback `.then(...)` (vedi `MonthCalendar.jsx`).
+   dell'effect — usa callback `.then(...)` e traccia lo stato "caricamento"
+   in modo derivato (vedi lo step 2 del booking, `StepSchedule.jsx`, e la
+   griglia slot in `BookingFlow.jsx`).
 
 ## Creare un endpoint (backend)
 
@@ -99,11 +101,12 @@ await apiFetch("/appointments", {
 1. Apri il file giusto in `client/src/styles/`:
    - `variables.css` — colori/valori condivisi (aggiungi qui, non sparsi);
    - `global.css` — stili base dell'app;
-   - `components.css` — classi usate da più componenti;
-   - `calendar.css` — stili del calendario mensile.
+   - `components.css` — classi usate da più componenti.
 2. Crea una classe dal nome chiaro (es. `.appointment-card`) e usala nel JSX.
 3. Se ripeti un valore (colore, spaziatura) più di una volta, mettilo in
    `variables.css` come custom property e usalo: `var(--brand-primary)`.
+4. Il tema visivo (colori Bootstrap, bottoni, card) vive in `theme.css`:
+   modifica lì per cambiare l'aspetto dell'intera app senza toccare i JSX.
 
 ## Eseguire i test
 

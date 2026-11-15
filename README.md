@@ -1,8 +1,8 @@
 # DacciUnTaglio — App di prenotazione per barbieri (MERN)
 
 Applicazione full-stack che permette ai clienti di prenotare un appuntamento
-(taglio, tinta, ecc.) scegliendo giorno e orario da un calendario, e all'admin
-di gestire appuntamenti, servizi e orari del negozio.
+(taglio, tinta, ecc.) scegliendo data e orario tra gli slot disponibili, e
+all'admin di gestire appuntamenti, servizi e orari del negozio.
 
 ## Tecnologie
 
@@ -54,8 +54,8 @@ cd client && npm run dev     # frontend su http://localhost:5173
 ## Seed iniziale
 
 Crea il negozio (orari lun–sab 09:00–19:00, pausa pranzo 13:00–14:00) e
-l'utente admin. Le credenziali admin si impostano via env (`ADMIN_EMAIL`,
-`ADMIN_PASSWORD`) o vengono stampate a console:
+l'utente admin. Le credenziali admin si impostano via env (`ADMIN_NAME`,
+`ADMIN_EMAIL`, `ADMIN_PASSWORD`) o vengono stampate a console:
 
 ```bash
 cd server && node seed.js
@@ -69,7 +69,7 @@ cd server && node seed.js
 | `npm run build`         | `client/`  | Build di produzione in `client/dist/`     |
 | `npm run preview`       | `client/`  | Anteprima della build di produzione       |
 | `npm run lint`          | `client/`  | Controllo qualità codice (ESLint)         |
-| `npm test`              | `server/`  | Suite di test (Vitest, 22 test)           |
+| `npm test`              | `server/`  | Suite di test (Vitest, 19 test)           |
 | `node seed.js`          | `server/`  | Crea negozio + admin se assenti           |
 
 ## Struttura delle cartelle
@@ -85,7 +85,7 @@ cd server && node seed.js
 │       ├── context/        # AuthContext (utente loggato)
 │       ├── hooks/          # useFetch (GET con loading/error/refetch)
 │       ├── pages/          # Pagine collegate alle route
-│       ├── styles/         # CSS organizzati (variables/global/components/calendar)
+│       ├── styles/         # CSS organizzati (variables/global/components)
 │       └── utils/          # format.js (date/prezzi), constants.js (stati)
 ├── server/                 # Backend Express
 │   ├── config/             # Connessione MongoDB
@@ -101,9 +101,9 @@ cd server && node seed.js
 
 ## Funzionalità principali
 
-- **Cliente**: registrazione/login, scelta servizio → calendario mensile con
-  giorni disponibili → griglia di slot → riepilogo e conferma; email di
-  conferma; "Le mie prenotazioni" con annullamento (entro 24h prima).
+- **Cliente**: registrazione/login, scelta servizio → data con picker e griglia
+  di slot → riepilogo e conferma; email di conferma; "Le mie prenotazioni"
+  con annullamento (entro 24h prima).
 - **Admin**: tabella appuntamenti (filtro per date, cambio stato anche
   retroattivo: completato/annullato/non presentato), CRUD servizi,
   gestione orari di apertura e pause settimanali.
