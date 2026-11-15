@@ -1,5 +1,6 @@
-﻿import { useState, useContext } from "react";
-import { Link, useNavigate} from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 
@@ -9,6 +10,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,33 +29,56 @@ export default function Login() {
   };
 
   return (
-    <div className="row justify-content-center">
-      <div className="col-md-6">
-        <h2 className="mb-4 text-center">Login</h2>
-        {/* Errore */}
+    <div className="card auth-card">
+      <div className="card-body">
+        <h2 className="auth-title">Accedi</h2>
+        <p className="auth-subtitle mb-4">
+          Bentornato! Inserisci le tue credenziali.
+        </p>
+
         <ErrorAlert message={error} />
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className="input-group">
+              <span className="input-group-text">
+                <Mail size={16} />
+              </span>
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
           </div>
-          <div className="mb-3">
+
+          <div className="mb-4">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="input-group">
+              <span className="input-group-text">
+                <Lock size={16} />
+              </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="input-group-text input-group-icon-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Nascondi password" : "Mostra password"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
+
           <button
             type="submit"
             className="btn btn-primary w-100"
@@ -62,7 +87,8 @@ export default function Login() {
             {loading ? "Accesso in corso..." : "Accedi"}
           </button>
         </form>
-        <p className="text-center mt-3">
+
+        <p className="auth-switch">
           Non hai un account? <Link to="/register">Registrati</Link>
         </p>
       </div>

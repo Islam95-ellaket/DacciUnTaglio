@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
@@ -6,6 +7,11 @@ import { apiFetch } from "../api/http.js";
 import { formatPrice, formatDate, formatTime } from "../utils/format.js";
 import { STATUS_LABELS, STATUS_BADGES } from "../utils/constants.js";
 
+/**
+ * "Le mie prenotazioni": card attive (badge verde, prezzo grande,
+ * annullamento a destra) e card passate/annullate su sfondo chiaro.
+ * Gli stati vuoti offrono sempre un'azione per proseguire.
+ */
 export default function MyBookings() {
   const { token } = useContext(AuthContext);
 
@@ -74,6 +80,9 @@ export default function MyBookings() {
       <div>
         <h2 className="mb-4">Le mie prenotazioni</h2>
         <div className="alert alert-info">Nessuna prenotazione.</div>
+        <Link to="/booking" className="btn btn-primary">
+          Prenota un appuntamento
+        </Link>
       </div>
     );
   }
@@ -87,26 +96,39 @@ export default function MyBookings() {
       )}
 
       {/* Prenotazioni attive */}
-      <h4 className="mb-3">Prenotazioni attive</h4>
+      <h4 className="mb-3">Attive</h4>
       {upcoming.length === 0 ? (
-        <p className="text-muted">Non hai prenotazioni in programma.</p>
+        <div className="mb-4">
+          <p className="text-secondary">Non hai prenotazioni in programma.</p>
+          <Link to="/booking" className="btn btn-primary">
+            Prenota un appuntamento
+          </Link>
+        </div>
       ) : (
         <div className="row g-3 mb-4">
           {upcoming.map((a) => (
             <div className="col-md-6" key={a._id}>
               <div className="card h-100">
                 <div className="card-body">
-                  <h5 className="card-title">{a.serviceId?.name}</h5>
-                  <p className="card-text mb-1">{formatDate(a.start)}</p>
-                  <p className="card-text mb-1">Ore {formatTime(a.start)}</p>
-                  <p className="fw-bold">{formatPrice(a.serviceId?.price)}</p>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleCancel(a._id)}
-                    disabled={cancelling === a._id}
-                  >
-                    {cancelling === a._id ? "Annullamento..." : "Annulla"}
-                  </button>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <h5 className="card-title mb-0">{a.serviceId?.name}</h5>
+                    <span className="badge bg-success">Attivo</span>
+                  </div>
+                  <p className="card-text text-secondary small mb-1">
+                    {formatDate(a.start)} · Ore {formatTime(a.start)}
+                  </p>
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <span className="booking-price">
+                      {formatPrice(a.serviceId?.price)}
+                    </span>
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => handleCancel(a._id)}
+                      disabled={cancelling === a._id}
+                    >
+                      {cancelling === a._id ? "Annullamento..." : "Annulla"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -115,21 +137,24 @@ export default function MyBookings() {
       )}
 
       {/* Prenotazioni passate / annullate */}
-      <h4 className="mb-3">Prenotazioni passate o annullate</h4>
+      <h4 className="mb-3">Passate o annullate</h4>
       {past.length === 0 ? (
-        <p className="text-muted">Nessuna prenotazione passata.</p>
+        <p className="text-secondary">Nessuna prenotazione passata.</p>
       ) : (
         <div className="row g-3">
           {past.map((a) => (
             <div className="col-md-6" key={a._id}>
-              <div className="card h-100 bg-light">
+              <div className="card h-100 past-card">
                 <div className="card-body">
-                  <h5 className="card-title">{a.serviceId?.name}</h5>
-                  <p className="card-text mb-1">{formatDate(a.start)}</p>
-                  <p className="card-text mb-2">Ore {formatTime(a.start)}</p>
-                  <span className={`badge ${STATUS_BADGES[a.status] || "bg-secondary"}`}>
-                    {STATUS_LABELS[a.status] || a.status}
-                  </span>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <h5 className="card-title mb-0">{a.serviceId?.name}</h5>
+                    <span className={STATUS_BADGES[a.status] || "badge bg-secondary"}>
+                      {STATUS_LABELS[a.status] || a.status}
+                    </span>
+                  </div>
+                  <p className="card-text text-secondary small mb-0">
+                    {formatDate(a.start)} · Ore {formatTime(a.start)}
+                  </p>
                 </div>
               </div>
             </div>

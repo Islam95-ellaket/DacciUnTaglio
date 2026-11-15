@@ -6,8 +6,8 @@ import HoursForm from "../components/admin-shop-hours/HoursForm.jsx";
 import RecurringBlocksForm from "../components/admin-shop-hours/RecurringBlocksForm.jsx";
 
 /**
- * Pagina admin "Orari di apertura": orari settimanali + pause ricorrenti.
- * I due form sono componenti separati in components/admin-shop-hours/.
+ * Pagina admin "Orari di apertura": due card affiancate su desktop
+ * (impilate su mobile): orari settimanali + pause ricorrenti.
  */
 export default function AdminShopHours() {
   const { token } = useContext(AuthContext);
@@ -20,9 +20,13 @@ export default function AdminShopHours() {
   const formKey = shop.updatedAt ?? "shop";
 
   return (
-    <>
-      <HoursForm key={`hours-${formKey}`} shop={shop} token={token} />
-      <RecurringBlocksForm key={`blocks-${formKey}`} shop={shop} token={token} />
-    </>
+    <div className="row g-4">
+      <div className="col-lg-6">
+        <HoursForm key={`hours-${formKey}`} shop={shop} token={token} />
+      </div>
+      <div className="col-lg-6">
+        <RecurringBlocksForm key={`blocks-${formKey}`} shop={shop} token={token} />
+      </div>
+    </div>
   );
 }

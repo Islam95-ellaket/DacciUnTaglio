@@ -8,38 +8,20 @@ import Services from "./pages/Services";
 import ServicesList from "./pages/ServicesList";
 import BookingFlow from "./pages/BookingFlow";
 import MyBookings from "./pages/MyBookings";
+import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAppointments from "./pages/AdminAppointments";
 import AdminShopHours from "./pages/AdminShopHours";
-
-
-
 
 export default function App() {
   return (
     <>
       <Navbar />
-      <div className="container mt-4">
+      <div className="container mt-4 flex-grow-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/admin-area"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/services"
-            element={
-              <ProtectedRoute role="admin">
-                <Services />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/services" element={<ServicesList />} />
           <Route path="/booking" element={<BookingFlow />} />
           <Route
@@ -50,26 +32,27 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Area admin: layout con sidebar + controllo del ruolo a monte */}
           <Route
-            path="/admin/appointments"
             element={
               <ProtectedRoute role="admin">
-                <AdminAppointments />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path="/admin/orari"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminShopHours />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route path="/admin-area" element={<AdminDashboard />} />
+            <Route path="/admin/appointments" element={<AdminAppointments />} />
+            <Route path="/admin/services" element={<Services />} />
+            <Route path="/admin/orari" element={<AdminShopHours />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
+      <footer className="app-footer text-center small py-4 mt-4">
+        © 2026 DacciUnTaglio, Via Roma 12, Milano
+      </footer>
     </>
   );
 }

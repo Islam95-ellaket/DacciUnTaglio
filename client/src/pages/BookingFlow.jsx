@@ -3,15 +3,18 @@ import { useLocation } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import useFetch from "../hooks/useFetch";
 import { apiFetch } from "../api/http.js";
+import Stepper from "../components/booking/Stepper.jsx";
 import StepServices from "../components/booking/StepServices.jsx";
 import StepSchedule from "../components/booking/StepSchedule.jsx";
 import StepConfirm from "../components/booking/StepConfirm.jsx";
 import ConfirmationScreen from "../components/booking/ConfirmationScreen.jsx";
 
+const BOOKING_STEPS = ["Servizio", "Data e orario", "Conferma"];
+
 /**
  * Orchestratore del flusso di prenotazione (3 step + schermata di conferma).
  * Le schermate sono componenti separati in components/booking/;
- * qui vivono solo lo stato condiviso, gli handler e le chiamate API.
+ * qui vivono solo lo stato condiviso, gli handler, le chiamate API e lo stepper.
  */
 export default function BookingFlow() {
   const { token } = useContext(AuthContext);
@@ -116,84 +119,90 @@ export default function BookingFlow() {
     }
   };
 
-  const resetAll = () => {
-    setConfirmed(false);
-    goToStep1();
-  };
-
-  // --- Schermata di conferma ---
+  // --- Schermata di conferma: tutti i passi completati ---
   if (confirmed) {
     return (
-      <ConfirmationScreen
-        service={selectedService}
-        slot={selectedSlot}
-        onReset={resetAll}
-      />
+      <>
+        <Stepper steps={BOOKING_STEPS} current={BOOKING_STEPS.length} />
+        <ConfirmationScreen
+          service={selectedService}
+          slot={selectedSlot}
+        />
+      </>
     );
   }
 
   // --- Step 1: scelta servizio ---
   if (step === 1) {
     return (
-      <StepServices
-        services={services}
-        loading={servicesLoading}
-        error={servicesError}
-        onRetry={loadServices}
-        onSelect={(service) => {
-          setSelectedService(service);
-          setMessage("");
-          setStep(2);
-        }}
-      />
+      <>
+        <Stepper steps={BOOKING_STEPS} current={0} />
+        <StepServices
+          services={services}
+          loading={servicesLoading}
+          error={servicesError}
+          onRetry={loadServices}
+          onSelect={(service) => {
+            setSelectedService(service);
+            setMessage("");
+            setStep(2);
+          }}
+        />
+      </>
     );
   }
 
   // --- Step 2: scelta data e orario ---
   if (step === 2) {
     return (
-      <StepSchedule
-        service={selectedService}
-        token={token}
-        date={date}
-        slots={slots}
-        slotsLoading={slotsLoading}
-        slotsError={slotsError}
-        selectedSlot={selectedSlot}
-        message={message}
-        onSelectDate={(newDate) => {
-          setDate(newDate);
-          setSelectedSlot(null);
-          setMessage("");
-        }}
-        onSelectSlot={(slot) => {
-          setSelectedSlot(slot);
-          setMessage("");
-        }}
-        onRetrySlots={loadSlots}
-        onBack={goToStep1}
-        onNext={() => {
-          setMessage("");
-          setStep(3);
-        }}
-      />
+      <>
+        <Stepper steps={BOOKING_STEPS} current={1} />
+        <StepSchedule
+          service={selectedService}
+          token={token}
+          date={date}
+          slots={slots}
+          slotsLoading={slotsLoading}
+          slotsError={slotsError}
+          selectedSlot={selectedSlot}
+          message={message}
+          onSelectDate={(newDate) => {
+            setDate(newDate);
+            setSelectedSlot(null);
+            setMessage("");
+          }}
+          onSelectSlot={(slot) => {
+            setSelectedSlot(slot);
+            setMessage("");
+          }}
+          onRetrySlots={loadSlots}
+          onBack={goToStep1}
+          onNext={() => {
+            setMessage("");
+            setStep(3);
+          }}
+        />
+      </>
     );
   }
 
   // --- Step 3: riepilogo e conferma ---
   if (step === 3) {
     return (
-      <StepConfirm
-        service={selectedService}
-        slot={selectedSlot}
-        message={message}
-        confirming={confirming}
-        onBack={() => {
-          setMessage("");
-          setStep(2);
-        }}
-        onConfirm={handleConfirm}
-      />
+      <>
+        <Stepper steps={BOOKING_STEPS} current={2} />
+        <StepConfirm
+          service={selectedService}
+          slot={selectedSlot}
+          message={message}
+          confirming={confirming}
+          onBack={() => {
+            setMessage("");
+            setStep(2);
+          }}
+          onConfirm={handleConfirm}
+        />
+      </>
     );
   }
 

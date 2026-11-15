@@ -1,7 +1,9 @@
 import ErrorAlert from "../ErrorAlert.jsx";
 import { formatPrice } from "../../utils/format.js";
 
-// Step 1 del booking: scelta del servizio tramite card cliccabili.
+// Step 1 del booking: card cliccabili (3 colonne desktop, lista mobile).
+// Il click avanza allo step 2: la selezione visiva è hover/:active
+// (bordo ocra + sfondo chiaro, classi del design system).
 export default function StepServices({ services, loading, error, onRetry, onSelect }) {
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={onRetry} />;
@@ -12,14 +14,15 @@ export default function StepServices({ services, loading, error, onRetry, onSele
       <div className="row g-3">
         {services.map((s) => (
           <div className="col-md-4" key={s._id}>
-            <div
-              className="card h-100 clickable-card"
-              onClick={() => onSelect(s)}
-            >
-              <div className="card-body text-center">
-                <h5 className="card-title">{s.name}</h5>
-                <p className="card-text">Durata: {s.durationMinutes} min</p>
-                <p className="fw-bold">{formatPrice(s.price)}</p>
+            <div className="service-select-card p-3" onClick={() => onSelect(s)}>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 className="mb-1">{s.name}</h5>
+                  <p className="text-secondary small mb-0">
+                    {s.durationMinutes} min
+                  </p>
+                </div>
+                <span className="fw-bold text-brand">{formatPrice(s.price)}</span>
               </div>
             </div>
           </div>

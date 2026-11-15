@@ -3,9 +3,9 @@ import { apiFetch } from "../../api/http.js";
 import { DAYS, buildInitialHours } from "./constants.js";
 
 /**
- * Form degli orari di apertura settimanali.
- * Un toggle "Aperto/Chiuso" e due campi ora per ogni giorno;
- * il salvataggio sostituisce l'intero elenco workingHours (PUT).
+ * Card "Orari settimanali": una riga per giorno (classe .day-row)
+ * con etichetta, orario di apertura, chiusura e toggle Aperto/Chiuso.
+ * Il salvataggio sostituisce l'intero elenco workingHours (PUT).
  */
 export default function HoursForm({ shop, token }) {
   const [hours, setHours] = useState(() => buildInitialHours(shop));
@@ -47,27 +47,46 @@ export default function HoursForm({ shop, token }) {
   };
 
   return (
-    <div>
-      <h2 className="mb-1">Orari di apertura</h2>
-      <p className="text-muted mb-4">
-        Imposta gli orari settimanali del negozio. I giorni chiusi non
-        generano slot prenotabili.
-      </p>
+    <div className="card h-100">
+      <div className="card-body">
+        <h2 className="h5 mb-1">Orari settimanali</h2>
+        <p className="text-secondary small mb-3">
+          I giorni chiusi non generano slot prenotabili.
+        </p>
 
-      {message && (
-        <div className={`alert alert-${message.type}`}>{message.text}</div>
-      )}
+        {message && (
+          <div className={`alert alert-${message.type}`}>{message.text}</div>
+        )}
 
-      <form onSubmit={handleSave}>
-        {DAYS.map((d) => {
-          const day = hours[d.dayOfWeek];
-          return (
-            <div className="row g-2 align-items-end mb-3" key={d.dayOfWeek}>
-              <div className="col-6 col-md-2">
-                <strong>{d.label}</strong>
-              </div>
-              <div className="col-6 col-md-2">
-                <div className="form-check form-switch mb-0">
+        <form onSubmit={handleSave}>
+          {DAYS.map((d) => {
+            const day = hours[d.dayOfWeek];
+            return (
+              <div className="day-row" key={d.dayOfWeek}>
+                <strong className="day-label">{d.label}</strong>
+                <input
+                  type="time"
+                  className="form-control form-control-sm"
+                  value={day.open}
+                  disabled={!day.isOpen}
+                  onChange={(e) =>
+                    updateDay(d.dayOfWeek, { open: e.target.value })
+                  }
+                  required={day.isOpen}
+                  aria-label={`Apertura ${d.label}`}
+                />
+                <input
+                  type="time"
+                  className="form-control form-control-sm"
+                  value={day.close}
+                  disabled={!day.isOpen}
+                  onChange={(e) =>
+                    updateDay(d.dayOfWeek, { close: e.target.value })
+                  }
+                  required={day.isOpen}
+                  aria-label={`Chiusura ${d.label}`}
+                />
+                <div className="form-check form-switch m-0">
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -79,47 +98,21 @@ export default function HoursForm({ shop, token }) {
                     }
                   />
                   <label
-                    className="form-check-label"
+                    className="form-check-label small"
                     htmlFor={`open-${d.dayOfWeek}`}
                   >
                     {day.isOpen ? "Aperto" : "Chiuso"}
                   </label>
                 </div>
               </div>
-              <div className="col-6 col-md-4">
-                <label className="form-label small mb-1">Apertura</label>
-                <input
-                  type="time"
-                  className="form-control"
-                  value={day.open}
-                  disabled={!day.isOpen}
-                  onChange={(e) =>
-                    updateDay(d.dayOfWeek, { open: e.target.value })
-                  }
-                  required={day.isOpen}
-                />
-              </div>
-              <div className="col-6 col-md-4">
-                <label className="form-label small mb-1">Chiusura</label>
-                <input
-                  type="time"
-                  className="form-control"
-                  value={day.close}
-                  disabled={!day.isOpen}
-                  onChange={(e) =>
-                    updateDay(d.dayOfWeek, { close: e.target.value })
-                  }
-                  required={day.isOpen}
-                />
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
 
-        <button type="submit" className="btn btn-primary" disabled={saving}>
-          {saving ? "Salvataggio..." : "Salva orari"}
-        </button>
-      </form>
+          <button type="submit" className="btn btn-primary mt-3" disabled={saving}>
+            {saving ? "Salvataggio..." : "Salva orari"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

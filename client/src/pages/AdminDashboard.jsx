@@ -1,53 +1,57 @@
 import { Link } from "react-router-dom";
+import { CalendarDays, Scissors, Clock, ChevronRight } from "lucide-react";
 
+const SECTIONS = [
+  {
+    to: "/admin/appointments",
+    icon: CalendarDays,
+    title: "Appuntamenti",
+    description: "Visualizza e gestisci gli appuntamenti del negozio.",
+  },
+  {
+    to: "/admin/services",
+    icon: Scissors,
+    title: "Servizi",
+    description: "Crea, modifica o disattiva i servizi offerti.",
+  },
+  {
+    to: "/admin/orari",
+    icon: Clock,
+    title: "Orari di apertura",
+    description: "Imposta gli orari settimanali e le pause del negozio.",
+  },
+];
+
+/**
+ * Panoramica admin: una card per sezione. Su desktop il link testuale
+ * con freccia; su mobile la card diventa una riga con chevron a destra.
+ */
 export default function AdminDashboard() {
   return (
     <div>
-      <h2 className="mb-4">Area Admin</h2>
-      <p className="text-muted mb-4">Gestisci il tuo negozio.</p>
+      <h2 className="mb-1">Panoramica</h2>
+      <p className="text-secondary mb-4">Gestisci il tuo negozio.</p>
 
       <div className="row g-3">
-        <div className="col-md-6">
-          <div className="card h-100">
-            <div className="card-body text-center">
-              <h5 className="card-title">📅 Appuntamenti</h5>
-              <p className="card-text">
-                Visualizza e gestisci gli appuntamenti del negozio.
-              </p>
-              <Link to="/admin/appointments" className="btn btn-primary">
-                Vai agli appuntamenti
-              </Link>
+        {SECTIONS.map(({ to, icon: Icon, title, description }) => (
+          <div className="col-md-6" key={to}>
+            <div className="card h-100">
+              <div className="card-body">
+                <Link to={to} className="admin-entry">
+                  <Icon size={22} className="admin-entry-icon" />
+                  <div className="admin-entry-body">
+                    <h5 className="mb-1">{title}</h5>
+                    <p className="text-secondary small mb-1">{description}</p>
+                    <span className="admin-entry-link d-none d-md-inline">
+                      Vai →
+                    </span>
+                  </div>
+                  <ChevronRight size={18} className="admin-entry-chevron d-md-none" />
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="card h-100">
-            <div className="card-body text-center">
-              <h5 className="card-title">✂️ Gestione Servizi</h5>
-              <p className="card-text">
-                Crea, modifica o disattiva i servizi offerti.
-              </p>
-              <Link to="/admin/services" className="btn btn-primary">
-                Vai alla gestione servizi
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="card h-100">
-            <div className="card-body text-center">
-              <h5 className="card-title">🕐 Orari di apertura</h5>
-              <p className="card-text">
-                Imposta gli orari settimanali del negozio.
-              </p>
-              <Link to="/admin/orari" className="btn btn-primary">
-                Vai agli orari
-              </Link>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

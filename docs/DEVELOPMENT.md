@@ -98,15 +98,15 @@ await apiFetch("/appointments", {
 
 ## Aggiungere uno stile CSS
 
-1. Apri il file giusto in `client/src/styles/`:
-   - `variables.css` — colori/valori condivisi (aggiungi qui, non sparsi);
-   - `global.css` — stili base dell'app;
-   - `components.css` — classi usate da più componenti.
-2. Crea una classe dal nome chiaro (es. `.appointment-card`) e usala nel JSX.
-3. Se ripeti un valore (colore, spaziatura) più di una volta, mettilo in
-   `variables.css` come custom property e usalo: `var(--brand-primary)`.
-4. Il tema visivo (colori Bootstrap, bottoni, card) vive in `theme.css`:
-   modifica lì per cambiare l'aspetto dell'intera app senza toccare i JSX.
+1. Il **design system completo** vive in `src/styles/dacciuntaglio-theme.css`
+   (importato in `main.jsx` subito dopo Bootstrap): palette `--dut-*`, override
+   dei componenti Bootstrap e classi dei componenti (`.stepper`, `.slot`,
+   `.admin-sidebar`, `.badge-status`, `.auth-card`…). Per cambiare l'aspetto
+   dell'app modifica lì.
+2. Stili specifici dell'app in `src/styles/global.css` e `components.css`
+   (caricati dopo il tema via `index.css`): footer, card servizio, CTA navbar.
+3. Se ripeti un valore (colore, spaziatura) più di una volta, aggiungilo alle
+   variabili `--dut-*` del tema e usalo: `var(--dut-brand)`.
 
 ## Eseguire i test
 

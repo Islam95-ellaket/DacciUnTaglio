@@ -1,5 +1,5 @@
-/* Punto d'ingresso dei fogli di stile: Vite li raggruppa in un unico CSS.
-   Ordine: variabili → globali → componenti. */
-@import "./styles/variables.css";
+/* Punto d'ingresso dei fogli di stile dell'app: Vite li raggruppa
+   in un unico CSS caricato DOPO il design system (dacciuntaglio-theme.css,
+   importato in main.jsx subito dopo Bootstrap). */
 @import "./styles/global.css";
 @import "./styles/components.css";

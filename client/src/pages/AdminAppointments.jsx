@@ -97,12 +97,12 @@ export default function AdminAppointments() {
     ) : (
       <>
         {a.status === "active" && (
-          <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleStatusChange(a._id, "cancelled")} disabled={updatingId !== null}>
+          <button className="btn btn-link btn-sm text-danger p-0 text-decoration-none action-link" onClick={() => handleStatusChange(a._id, "cancelled")} disabled={updatingId !== null}>
             {updatingId === a._id ? "..." : "Annulla"}
           </button>
         )}
         {a.status === "cancelled" && (
-          <button className="btn btn-sm btn-outline-primary" onClick={() => handleStatusChange(a._id, "active")} disabled={updatingId !== null}>
+          <button className="btn btn-link btn-sm p-0 text-decoration-none action-link action-reactivate" onClick={() => handleStatusChange(a._id, "active")} disabled={updatingId !== null}>
             {updatingId === a._id ? "..." : "Riattiva"}
           </button>
         )}
@@ -112,15 +112,18 @@ export default function AdminAppointments() {
 
   return (
     <div>
-      <h2 className="mb-3">Appuntamenti</h2>
+      <h2 className="mb-1">Appuntamenti</h2>
+      <p className="text-secondary mb-3">Gestisci gli appuntamenti del negozio.</p>
+
       {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
+
       <div className="row g-2 mb-3">
         <div className="col-md-3">
-          <label className="form-label">Da</label>
+          <label className="form-label small text-secondary">Da</label>
           <input type="date" className="form-control" value={from} onChange={(e) => setFrom(e.target.value)} />
         </div>
         <div className="col-md-3">
-          <label className="form-label">A</label>
+          <label className="form-label small text-secondary">A</label>
           <input type="date" className="form-control" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} />
         </div>
       </div>
@@ -139,14 +142,14 @@ export default function AdminAppointments() {
           <div className="d-md-none">
             {appointments.map((a) => (
               <div className="card mb-2" key={a._id}>
-                <div className="card-body py-2">
+                <div className="card-body py-3">
                   <div className="d-flex justify-content-between align-items-center mb-1">
                     <strong>{a.userId?.name || "—"}</strong>
-                    <span className={`badge ${STATUS_BADGES[a.status] || "bg-secondary"}`}>
+                    <span className={STATUS_BADGES[a.status] || "badge bg-secondary"}>
                       {STATUS_LABELS[a.status] || a.status}
                     </span>
                   </div>
-                  <div className="small text-muted mb-1">
+                  <div className="small text-secondary mb-1">
                     {a.serviceId?.name || "—"}
                   </div>
                   <div className="small mb-2">
@@ -160,7 +163,7 @@ export default function AdminAppointments() {
 
           {/* Tabella da tablet in su */}
           <div className="table-responsive d-none d-md-block">
-            <table className="table table-striped table-hover align-middle">
+            <table className="table table-admin align-middle">
               <thead>
                 <tr>
                   <th>Data</th>
@@ -169,7 +172,7 @@ export default function AdminAppointments() {
                   <th>Contatto</th>
                   <th>Servizio</th>
                   <th>Stato</th>
-                  <th>Azioni</th>
+                  <th className="text-end">Azioni</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,11 +190,11 @@ export default function AdminAppointments() {
                     </td>
                     <td>{a.serviceId?.name || "—"}</td>
                     <td>
-                      <span className={`badge ${STATUS_BADGES[a.status] || "bg-secondary"}`}>
+                      <span className={STATUS_BADGES[a.status] || "badge bg-secondary"}>
                         {STATUS_LABELS[a.status] || a.status}
                       </span>
                     </td>
-                    <td>{renderActions(a)}</td>
+                    <td className="text-end">{renderActions(a)}</td>
                   </tr>
                 ))}
               </tbody>

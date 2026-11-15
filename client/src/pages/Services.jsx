@@ -157,7 +157,7 @@ export default function Services() {
 
       {/* Tabella su tablet e desktop */}
       <div className="table-responsive d-none d-md-block">
-        <table className="table table-striped">
+        <table className="table">
           <thead>
             <tr>
               <th>Nome</th>
@@ -187,6 +187,10 @@ export default function Services() {
         onClose={() => setEditing(null)}
         onSubmit={handleUpdate}
       />
+
+      {services.length === 0 && (
+        <div className="alert alert-info">Nessun servizio attivo.</div>
+      )}
     </div>
   );
 }

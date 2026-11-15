@@ -9,3 +9,43 @@
 .modal-overlay-dark {
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+/* ─── Card servizio pubblico (Home e ServicesList) ─── */
+/* Desktop: layout verticale (info sopra, bottone largo sotto).
+   Mobile: riga compatta — nome+durata a sinistra, prezzo+bottone a destra. */
+.service-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.service-card-body .service-cta .btn {
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .service-card-body {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .service-card-body .service-cta {
+    text-align: right;
+  }
+
+  .service-card-body .service-cta .btn {
+    width: auto;
+  }
+
+  .service-card-body .service-info .fw-bold {
+    margin-top: 0;
+  }
+}
+
+/* ─── CTA "Prenota ora" nella navbar (solo desktop) ─── */
+.navbar-cta {
+  padding: 8px 16px;
+}
