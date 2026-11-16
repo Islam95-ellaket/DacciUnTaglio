@@ -1,9 +1,5 @@
-/**
- * Modal Bootstrap (aperto/chiuso via stato del genitore) per modificare
- * nome, prezzo e durata di un servizio. `editing` è il servizio in modifica
- * o null: qui null non dovrebbe arrivare (il genitore renderizza il modal
- * condizionalmente), ma il guard rende il componente robusto.
- */
+// Modal di modifica servizio. editing = servizio in modifica o null:
+// il guard rende il componente robusto anche se arriva null.
 export default function ServiceEditModal({ editing, onChange, onClose, onSubmit }) {
   if (!editing) return null;
 

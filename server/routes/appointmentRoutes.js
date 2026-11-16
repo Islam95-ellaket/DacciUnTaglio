@@ -21,7 +21,7 @@ router.post("/", auth, createValidator, createAppointment);
 // DELETE annulla prenotazione (utente loggato)
 router.delete("/:id", auth, cancelAppointment);
 
-// Admin: lista appuntamenti per intervallo (admin)
+// Admin: lista appuntamenti per intervallo di date
 router.get("/admin", auth, authorize(["admin"]), getAdminAppointments);
 
 // Admin: cambia stato (admin)

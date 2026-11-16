@@ -11,8 +11,8 @@ indipendenti che comunicano via HTTP/JSON.
 
 ```
 ┌─────────────────┐         HTTPS/JSON          ┌──────────────────┐
-│   React (client)│  ──────────────────────────▶ │  Express (server)│
-│   Vite + Bootstrap                            │                  │
+│ React (client)  │ ─────────────────────────▶ │  Express (server)│
+│Vite + Bootstrap |                             │                  │
 └─────────────────┘                             └────────┬─────────┘
                                                          │ Mongoose
                                                          ▼

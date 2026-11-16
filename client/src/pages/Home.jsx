@@ -29,15 +29,12 @@ export default function Home() {
           <Link to="/services" className="btn btn-outline-primary">
             Vedi i servizi
           </Link>
-        </div>
-
-        {user && user.role === "admin" && (
-          <p className="mt-3 mb-0">
-            <Link to="/admin-area" className="btn btn-link">
+          {user && user.role === "admin" && (
+            <Link to="/admin-area" className="btn btn-dark">
               Vai all'Area Admin
             </Link>
-          </p>
-        )}
+          )}
+        </div>
       </section>
 
       {/* Servizi più richiesti */}

@@ -1,9 +1,7 @@
 import ErrorAlert from "../ErrorAlert.jsx";
 import { formatPrice } from "../../utils/format.js";
 
-// Step 1 del booking: card cliccabili (3 colonne desktop, lista mobile).
-// Il click avanza allo step 2: la selezione visiva è hover/:active
-// (bordo ocra + sfondo chiaro, classi del design system).
+// Step 1: card cliccabili, il click avanza allo step 2.
 export default function StepServices({ services, loading, error, onRetry, onSelect }) {
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={onRetry} />;

@@ -1,0 +1,55 @@
+/* Orari di apertura: righe giornaliere dei form orari e pause. */
+
+/* ── Orari del negozio (AdminShopHours) ── */
+/* REGOLA BASE: riga a una linea (etichetta compatta + 2 orari + toggle). */
+.day-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dut-surface-muted);
+}
+
+.day-row:last-child {
+  border-bottom: none;
+}
+
+/* Gli input devono potersi restringere sotto la larghezza naturale:
+   senza min-width: 0 la griglia non li restringe e il toggle sborda. */
+.day-row input[type="time"] {
+  min-width: 0;
+}
+
+/* VARIANTE A DUE RIGHE (giorno+toggle sopra, orari sotto): sotto i 768px
+   e tra 992-1400px (card affiancate strette). Stessa specificità della
+   regola base: deve restare DOPO, altrimenti la base vince e la colonna
+   vuota a destra ricompare. */
+@media (max-width: 767.98px), (min-width: 992px) and (max-width: 1399.98px) {
+  .day-row {
+    /* Due colonne UGUALI: i due orari hanno la stessa larghezza e il
+       toggle resta agganciato al bordo destro della seconda colonna. */
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* prima riga: nome del giorno a sinistra, toggle Aperto/Chiuso a destra */
+  .day-row .day-label {
+    grid-area: 1 / 1;
+    align-self: center;
+  }
+
+  .day-row .form-check {
+    grid-area: 1 / 2;
+    justify-self: end;
+    align-self: center;
+  }
+
+  /* seconda riga: i due orari affiancati */
+  .day-row input[type="time"]:first-of-type {
+    grid-area: 2 / 1;
+  }
+
+  .day-row input[type="time"]:last-of-type {
+    grid-area: 2 / 2;
+  }
+}

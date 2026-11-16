@@ -7,11 +7,8 @@ import { formatPrice } from "../utils/format.js";
 import ServiceActions from "../components/services/ServiceActions.jsx";
 import ServiceEditModal from "../components/services/ServiceEditModal.jsx";
 
-/**
- * Pagina admin "Gestione servizi": creazione, modifica e disattivazione.
- * Elenco responsive (card su mobile, tabella da tablet in su);
- * la disattivazione è uno soft delete lato backend (isActive: false).
- */
+// Gestione servizi: creazione, modifica e disattivazione (soft delete:
+// il backend mette isActive: false).
 export default function Services() {
   const { token } = useContext(AuthContext);
 

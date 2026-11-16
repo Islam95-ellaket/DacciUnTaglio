@@ -3,21 +3,24 @@ import { Pencil, Trash2 } from "lucide-react";
 import { apiFetch } from "../../api/http.js";
 import { DAYS, EMPTY_BLOCK, dayLabel } from "./constants.js";
 
-/**
- * Card "Pause ricorrenti": blocchi settimanali (es. pausa pranzo) che
- * rendono non prenotabili degli orari. L'elenco si modifica in locale
- * e si salva per intero con PUT (giorno assente dall'elenco = nessuna pausa).
- */
+// L'elenco delle pause vive in una bozza locale: "Salva pause" manda tutto
+// al backend con PUT. Eliminazioni e modifiche valgono solo dopo il salvataggio.
 export default function RecurringBlocksForm({ shop, token }) {
   const [blocks, setBlocks] = useState(() => shop.recurringBlocks ?? []);
   const [newBlock, setNewBlock] = useState(EMPTY_BLOCK);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const addBlock = () => {
-    setBlocks((prev) => [...prev, { ...newBlock }]);
-    setNewBlock(EMPTY_BLOCK);
-  };
+  // Form compilato e valido (serve inizio < fine).
+  const formBlockIsValid =
+    Boolean(newBlock.open) &&
+    Boolean(newBlock.close) &&
+    newBlock.open < newBlock.close;
+
+  // Form a metà compilato (o invalido): blocchiamo il salvataggio invece di
+  // ignorare la mezza pausa senza spiegazioni.
+  const formIsIncomplete =
+    Boolean(newBlock.open || newBlock.close || newBlock.reason) && !formBlockIsValid;
 
   const removeBlock = (index) =>
     setBlocks((prev) => prev.filter((_, i) => i !== index));
@@ -30,8 +33,7 @@ export default function RecurringBlocksForm({ shop, token }) {
       close: block.close,
       reason: block.reason ?? "",
     });
-    // Rimuove il blocco dalla lista: l'utente lo modifica nel form
-    // e lo riaggiunge con "Aggiungi pausa" (o lo salva direttamente).
+    // Toglie il blocco dalla lista: "Salva pause" risalva con quello modificato.
     setBlocks((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -39,13 +41,10 @@ export default function RecurringBlocksForm({ shop, token }) {
     setSaving(true);
     setMessage(null);
 
-    // Se il form contiene un blocco valido non ancora aggiunto alla lista,
-    // lo includiamo nel salvataggio (evita che l'utente debba cliccare
-    // "Aggiungi pausa" prima di "Salva pause").
-    const finalBlocks = [...blocks];
-    if (newBlock.open && newBlock.close && newBlock.open < newBlock.close) {
-      finalBlocks.push({ ...newBlock });
-    }
+    // Elenco attuale + eventuale pausa nuova del form.
+    const finalBlocks = formBlockIsValid
+      ? [...blocks, { ...newBlock }]
+      : [...blocks];
 
     try {
       await apiFetch("/shop/recurring-blocks", {
@@ -164,21 +163,22 @@ export default function RecurringBlocksForm({ shop, token }) {
           </div>
         </div>
 
-        <div className="d-flex gap-2">
-          <button
-            className="btn btn-outline-primary"
-            onClick={addBlock}
-            disabled={
-              !newBlock.open || !newBlock.close || newBlock.open >= newBlock.close
-            }
-          >
-            Aggiungi pausa
-          </button>
-          <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? "Salvataggio..." : "Salva pause"}
-          </button>
-        </div>
-        <p className="form-text">La pausa entra in vigore solo dopo "Salva pause".</p>
+        <button
+          className="btn btn-primary"
+          onClick={handleSave}
+          disabled={saving || formIsIncomplete}
+          title={
+            formIsIncomplete
+              ? "Completa o svuota il form della nuova pausa"
+              : undefined
+          }
+        >
+          {saving ? "Salvataggio..." : "Salva pause"}
+        </button>
+        <p className="form-text">
+          Per aggiungere una pausa compila il form e premi "Salva pause".
+          Eliminazioni e modifiche hanno effetto solo dopo il salvataggio.
+        </p>
       </div>
     </div>
   );

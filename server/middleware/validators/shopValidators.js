@@ -1,6 +1,10 @@
 import { body } from "express-validator";
+import Shop from "../../models/Shop.js";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+// Nomi dei giorni per i messaggi d'errore (indice = dayOfWeek, 0 = domenica)
+const DAY_NAMES = ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"];
 
 // PUT /api/shop/working-hours — sostituzione completa degli orari settimanali.
 // Ogni elemento: { dayOfWeek 0-6 (0 = domenica), open "HH:MM", close "HH:MM" }.
@@ -74,6 +78,31 @@ export const updateRecurringBlocksValidator = [
         for (const item of items) {
             if (item.open >= item.close) {
                 throw new Error("L'orario di inizio deve precedere quello di fine");
+            }
+        }
+
+        return true;
+    }),
+
+    // La pausa deve cadere DENTRO l'orario di apertura del giorno: una pausa
+    // fuori fascia non coprirebbe nessuno slot (dato salvato ma privo di effetto).
+    body("recurringBlocks").custom(async (items) => {
+        const shop = await Shop.findOne().select("workingHours");
+        if (!shop) return true; // senza shop non c'è riferimento: non giudichiamo
+
+        for (const item of items) {
+            const dayOfWeek = Number(item.dayOfWeek);
+            const dayName = DAY_NAMES[dayOfWeek];
+            const workingHour = shop.workingHours?.find((w) => w.dayOfWeek === dayOfWeek);
+
+            if (!workingHour) {
+                throw new Error(`Il negozio è chiuso di ${dayName}: una pausa non ha senso in quel giorno`);
+            }
+
+            if (item.open < workingHour.open || item.close > workingHour.close) {
+                throw new Error(
+                    `La pausa di ${dayName} deve essere dentro l'orario di apertura (${workingHour.open} - ${workingHour.close})`
+                );
             }
         }
 

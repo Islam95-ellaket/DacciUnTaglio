@@ -5,10 +5,7 @@ import useFetch from "../hooks/useFetch";
 import HoursForm from "../components/admin-shop-hours/HoursForm.jsx";
 import RecurringBlocksForm from "../components/admin-shop-hours/RecurringBlocksForm.jsx";
 
-/**
- * Pagina admin "Orari di apertura": due card affiancate su desktop
- * (impilate su mobile): orari settimanali + pause ricorrenti.
- */
+// Due card affiancate: orari settimanali a sinistra, pause ricorrenti a destra.
 export default function AdminShopHours() {
   const { token } = useContext(AuthContext);
   const { data: shop, loading, error, refetch } = useFetch("/shop", { token });
@@ -16,7 +13,7 @@ export default function AdminShopHours() {
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
   if (error) return <ErrorAlert message={error} onRetry={refetch} />;
 
-  // key su updatedAt: dopo il salvataggio i form si reimpostano coi valori appena salvati
+  // key su updatedAt: dopo il salvataggio i form ripartono dai valori appena salvati
   const formKey = shop.updatedAt ?? "shop";
 
   return (

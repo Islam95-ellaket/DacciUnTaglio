@@ -98,15 +98,29 @@ await apiFetch("/appointments", {
 
 ## Aggiungere uno stile CSS
 
-1. Il **design system completo** vive in `src/styles/dacciuntaglio-theme.css`
-   (importato in `main.jsx` subito dopo Bootstrap): palette `--dut-*`, override
-   dei componenti Bootstrap e classi dei componenti (`.stepper`, `.slot`,
-   `.admin-sidebar`, `.badge-status`, `.auth-card`…). Per cambiare l'aspetto
-   dell'app modifica lì.
-2. Stili specifici dell'app in `src/styles/global.css` e `components.css`
-   (caricati dopo il tema via `index.css`): footer, card servizio, CTA navbar.
-3. Se ripeti un valore (colore, spaziatura) più di una volta, aggiungilo alle
-   variabili `--dut-*` del tema e usalo: `var(--dut-brand)`.
+La catena CSS entra da `src/index.css` (unico import stilistico in `main.jsx`,
+subito dopo Bootstrap) e viene fusa da Vite in un solo file alla build.
+**L'ordine degli `@import` in `index.css` è vincolante: non riordinarlo.**
+
+1. **Variabili** (`src/styles/variables.css`): palette `--dut-*` e
+   ridefinizioni delle variabili Bootstrap. Se ripeti un valore (colore,
+   spaziatura) più di una volta, aggiungilo qui e usalo: `var(--dut-brand)`.
+2. **Override Bootstrap** (`src/styles/bootstrap-overrides.css`): bottoni,
+   card, form, alert, modal.
+3. **Globali** (`src/styles/global.css`): base, tipografia, navbar, footer.
+4. **Layout condiviso** (`src/styles/layout.css`): struttura area admin,
+   sidebar, profilo utente.
+5. **Componenti condivisi** (`src/styles/components.css`): solo classi usate
+   da **più aree** (admin + cliente): badge di stato, prezzi brand, overlay
+   del modal.
+6. **Pagine** (`src/styles/pages/*.css`): una pagina (o famiglia) a file
+   (`auth`, `booking`, `home`, `services`, `my-bookings`, `dashboard`,
+   `appointments`, `opening-hours`). Le media query restano nel file della
+   pagina a cui si riferiscono.
+
+Regola pratica: la classe serve in una sola pagina → `pages/*.css`; serve in
+due aree diverse → `components.css`; ridefinisce un componente Bootstrap →
+`bootstrap-overrides.css`.
 
 ## Eseguire i test
 

@@ -11,9 +11,8 @@ const escapeHtml = (value) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]
   );
 
-// Il trasportatore SMTP viene creato SOLO alla prima email e poi riusato.
-// NON possiamo crearlo subito qui sopra: dotenv.config() in server.js viene
-// eseguita DOPO gli import, quindi process.env a questo punto è ancora vuoto.
+// Transporter lazy (creato alla prima email e poi riusato): dotenv gira
+// DOPO gli import, quindi process.env non è pronto a livello di modulo.
 let transporter = null;
 let transporterReady = false;
 
@@ -42,8 +41,8 @@ const getTransporter = () => {
 
 /**
  * Invia l'email di conferma di una prenotazione.
- * Chi la chiama deve gestire gli errori (try/catch nel controller):
- * una email mancata NON deve mai annullare la prenotazione.
+ * Chi la chiama deve gestire gli errori: una email mancata NON deve mai
+ * annullare la prenotazione.
  */
 export const sendBookingConfirmationEmail = async ({ user, service, appointment, shop }) => {
   const timeZone = shop.timezone || "Europe/Rome";
@@ -77,9 +76,9 @@ export const sendBookingConfirmationEmail = async ({ user, service, appointment,
     shop.name,
   ].join("\n");
 
-  // Versione HTML: tutti i CSS in un <style> nel <head>, nessuno stile inline.
-  // Attenzione: alcuni client (es. Outlook desktop) ignorano il <style>
-  // e mostreranno la mail non formattata (il contenuto resta integro).
+  // Versione HTML: CSS nel <style> del <head>, zero stili inline (scelta
+  // voluta). Alcuni client (Outlook desktop) ignorano il <style>: la mail
+  // arriva non formattata ma con il contenuto integro.
   const html = `<!DOCTYPE html>
 <html lang="it">
 <head>

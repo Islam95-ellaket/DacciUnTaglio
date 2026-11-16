@@ -1,8 +1,7 @@
 import ErrorAlert from "../ErrorAlert.jsx";
 import { formatTime, formatPrice, getRomeDate } from "../../utils/format.js";
 
-// Step 2 del booking: riepilogo servizio+data (colonna 380px su desktop)
-// e griglia di slot orari. Su mobile le due colonne si impilano.
+// Step 2: riepilogo a sinistra e griglia slot a destra; su mobile si impilano.
 export default function StepSchedule({
   service,
   token,

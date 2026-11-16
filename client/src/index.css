@@ -1,5 +1,18 @@
-/* Punto d'ingresso dei fogli di stile dell'app: Vite li raggruppa
-   in un unico CSS caricato DOPO il design system (dacciuntaglio-theme.css,
-   importato in main.jsx subito dopo Bootstrap). */
+/* Punto d'ingresso dei fogli di stile dell'app.
+   Vite risolve gli @import alla build: esce UN SOLO CSS, in questo ordine esatto.
+   L'ordine e la cascata sono vincolanti: non riordinare.
+   Tutta la catena viene caricata DOPO bootstrap.min.css (v. main.jsx). */
+
+@import "./styles/variables.css";
+@import "./styles/bootstrap-overrides.css";
 @import "./styles/global.css";
+@import "./styles/layout.css";
 @import "./styles/components.css";
+@import "./styles/pages/auth.css";
+@import "./styles/pages/booking.css";
+@import "./styles/pages/home.css";
+@import "./styles/pages/services.css";
+@import "./styles/pages/my-bookings.css";
+@import "./styles/pages/dashboard.css";
+@import "./styles/pages/appointments.css";
+@import "./styles/pages/opening-hours.css";

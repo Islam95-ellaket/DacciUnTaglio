@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { fromZonedTime } from "date-fns-tz";
 import Shop from "../models/Shop.js";
 import Service from "../models/Service.js";
 import Appointment from "../models/Appointment.js";

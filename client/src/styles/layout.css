@@ -1,0 +1,94 @@
+/* Layout condiviso: struttura area admin, sidebar, profilo utente. */
+
+/* ── Area admin: layout con sidebar ── */
+.admin-layout {
+  display: flex;
+  gap: 24px;
+  align-items: stretch; /* sidebar alta quanto il contenuto della pagina */
+}
+
+.admin-sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: var(--dut-text);
+  border-radius: 12px;
+  padding: 12px;
+  position: sticky;
+  top: 16px;
+}
+
+.admin-sidebar .nav-link {
+  color: #cfc9c3;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.admin-sidebar .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-sidebar .nav-link.active {
+  color: #fff;
+  background: var(--dut-brand);
+}
+
+.admin-content {
+  flex: 1;
+  min-width: 0; /* le tabelle lunghe non spingono fuori la pagina */
+}
+
+@media (max-width: 767.98px) {
+  .admin-layout {
+    display: block;
+  }
+
+  .admin-sidebar {
+    display: none; /* su mobile la navigazione resta nella navbar */
+  }
+}
+
+/* ── Profilo utente in fondo alla sidebar admin ── */
+.admin-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px 4px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--dut-brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.admin-profile-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.admin-profile-role {
+  color: #9c958e;
+  font-size: 0.75rem;
+}
+
+/* ── Bottone "torna indietro" dell'area admin: semi-trasparente ── */
+.admin-back {
+  opacity: 0.75;
+}
+
+.admin-back:hover {
+  opacity: 1;
+}

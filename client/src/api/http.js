@@ -1,7 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
 
-// fetch condiviso: gestisce JSON, header auth e il formato errore del backend
-// ({ error: { message } }). L'errore lanciato espone .status per i controlli sui codici HTTP.
+// fetch condiviso: header auth, JSON e formato errore del backend
+// ({ error: { message } }). L'errore lanciato espone .status.
 export async function apiFetch(endpoint, { method = "GET", token, body, signal } = {}) {
   const res = await fetch(`${API}${endpoint}`, {
     method,

@@ -1,8 +1,7 @@
 import ErrorAlert from "../ErrorAlert.jsx";
 import { formatPrice, formatDate, formatTime } from "../../utils/format.js";
 
-// Step 3 del booking: card di riepilogo centrata (520px) con totale in
-// grande e un solo bottone primario ("Conferma prenotazione").
+// Step 3: riepilogo con totale grande e conferma.
 export default function StepConfirm({ service, slot, message, confirming, onBack, onConfirm }) {
   return (
     <div className="confirm-wrap">

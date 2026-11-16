@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -87,6 +88,12 @@ export default function Login() {
             {loading ? "Accesso in corso..." : "Accedi"}
           </button>
         </form>
+
+        <div className="auth-divider" role="separator">
+          <span>oppure</span>
+        </div>
+
+        <GoogleLoginButton text="continue_with" onError={setError} onSuccess={() => navigate("/")} />
 
         <p className="auth-switch">
           Non hai un account? <Link to="/register">Registrati</Link>

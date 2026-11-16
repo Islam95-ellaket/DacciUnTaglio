@@ -4,9 +4,9 @@ import { getLocalDateString } from "../utils/dateUtils.js";
 
 export const TIMEZONE = "Europe/Rome";
 
-// ─── Helper: date future e conversioni nel fuso del negozio ──────────────────
-// I servizi escludono gli slot nel passato (start <= now), quindi i test
-// usano date calcolate dinamicamente: restano validi qualunque giorno li lanci.
+// ─── Helper: date future nel fuso del negozio ────────────────────────────────
+// I servizi escludono gli slot nel passato (start <= now): i test usano date
+// calcolate dinamicamente, così restano validi qualunque giorno li lanci.
 
 // Giorno della settimana (0 = domenica) di una data YYYY-MM-DD "locale"
 export const weekdayOf = (dateStr) => {
@@ -32,9 +32,9 @@ export const futureLocalDate = (weekday, minDaysAhead = 3) => {
 export const slotISO = (dateStr, hhmm) =>
   fromZonedTime(`${dateStr}T${hhmm}:00`, TIMEZONE).toISOString();
 
-// ─── Helper: chiamare i controller Express direttamente nei test ─────────────
-// Senza supertest: i controller sono funzioni (req, res, next), quindi passiamo
-// oggetti "finti". Gli errori finiscono in next(ApiError), non in risposte HTTP.
+// ─── Helper: chiamare i controller senza supertest ───────────────────────────
+// I controller sono funzioni (req, res, next): passiamo oggetti finti e
+// raccogliamo gli errori da next(ApiError) invece che da risposte HTTP.
 
 export const mockRes = () => {
   const res = {};

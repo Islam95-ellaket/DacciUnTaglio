@@ -22,10 +22,7 @@ const SECTIONS = [
   },
 ];
 
-/**
- * Panoramica admin: una card per sezione. Su desktop il link testuale
- * con freccia; su mobile la card diventa una riga con chevron a destra.
- */
+// Una card per sezione admin; su mobile la card diventa una riga con chevron.
 export default function AdminDashboard() {
   return (
     <div>
