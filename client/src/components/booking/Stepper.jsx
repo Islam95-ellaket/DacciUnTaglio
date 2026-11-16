@@ -1,6 +1,5 @@
-// Indicatore visivo dei passi del booking: completato = ✓ su ocra chiaro,
-// attivo = numero su cerchio pieno ocra, futuro = solo bordo grigio.
-// Presentazionale: riceve l'elenco dei passi e l'indice di quello corrente.
+// Indicatori dei passi: ✓ = completato, cerchio ocra = attivo,
+// bordo grigio = futuro.
 export default function Stepper({ steps, current }) {
   return (
     <ol className="stepper">

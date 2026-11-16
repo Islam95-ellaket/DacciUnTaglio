@@ -9,19 +9,14 @@ import { fromZonedTime } from "date-fns-tz";
 import User from "../models/User.js";
 import { sendBookingConfirmationEmail } from "../services/emailService.js";
 
-/**
- * Helper per aggiornare automaticamente gli appuntamenti passati allo stato "completed".
- */
+// Auto-completamento: gli appuntamenti passati ancora "active" diventano "completed"
 const completePastAppointments = (filter) =>
   Appointment.updateMany(
     { ...filter, status: "active", end: { $lt: new Date() } },
     { $set: { status: "completed" } }
   );
 
-/**
- * Crea un nuovo appuntamento.
- * Include controlli rigorosi su disponibilità e race condition.
- */
+// Crea la prenotazione con i controlli anti-doppia e anti-race-condition
 export const createAppointment = async (req, res, next) => {
   try {
     const { serviceId, start } = req.body;
@@ -40,7 +35,7 @@ export const createAppointment = async (req, res, next) => {
       throw new ApiError(400, "Data di inizio non valida");
     }
 
-    // 2. Recupero dati necessari (Servizio e Negozio)
+    // 2. Servizio e negozio
     const [service, shop] = await Promise.all([
       Service.findById(serviceId),
       Shop.findOne(),
@@ -59,7 +54,7 @@ export const createAppointment = async (req, res, next) => {
     const timeZone = shop.timezone || "Europe/Rome";
     const localDate = getLocalDateString(startDate, timeZone);
 
-    // 3. Limite prenotazioni: max N appuntamenti "active" per cliente nello stesso giorno (fuso negozio)
+    // 3. Limite prenotazioni per cliente: max N "active" nello stesso giorno (fuso negozio)
     const maxBookingsPerDay = Number(shop.maxBookingsPerDay) || 1;
     const dayStart = fromZonedTime(`${localDate}T00:00:00`, timeZone);
     const dayEnd = fromZonedTime(`${nextDate(localDate)}T00:00:00`, timeZone);
@@ -103,8 +98,8 @@ export const createAppointment = async (req, res, next) => {
       status: "active",
     });
 
-    // 7. Email di conferma: try/catch SEPARATO — la mail è un effetto collaterale:
-    //    se fallisce, la prenotazione (già salvata) resta valida
+    // 7. Email in try/catch separato: è un effetto collaterale, se fallisce
+    //    la prenotazione (già salvata) resta valida.
     try {
       const user = await User.findById(req.user.id);
       if (user) {
@@ -123,9 +118,6 @@ export const createAppointment = async (req, res, next) => {
   }
 };
 
-/**
- * Restituisce gli appuntamenti dell'utente loggato.
- */
 export const getMyAppointments = async (req, res, next) => {
   try {
     await completePastAppointments({ userId: req.user.id });
@@ -140,10 +132,7 @@ export const getMyAppointments = async (req, res, next) => {
   }
 };
 
-/**
- * Annulla un appuntamento (Cliente).
- * Verifica la regola delle 24 ore.
- */
+// Annullamento lato cliente: vale la regola delle 24 ore
 export const cancelAppointment = async (req, res, next) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
@@ -174,9 +163,6 @@ export const cancelAppointment = async (req, res, next) => {
   }
 };
 
-/**
- * Restituisce tutti gli appuntamenti in un intervallo di date (Admin).
- */
 export const getAdminAppointments = async (req, res, next) => {
   try {
     const { from, to } = req.query;
@@ -212,9 +198,6 @@ export const getAdminAppointments = async (req, res, next) => {
   }
 };
 
-/**
- * Aggiorna lo stato di un appuntamento (Admin).
- */
 export const updateAppointmentStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
@@ -231,7 +214,7 @@ export const updateAppointmentStatus = async (req, res, next) => {
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) throw new ApiError(404, "Appuntamento non trovato");
 
-    // Se si tenta di riattivare un appuntamento, controlla conflitti
+    // Riattivare uno slot richiede il controllo conflitti
     if (status === "active" && appointment.status !== "active") {
       const conflict = await Appointment.findOne({
         _id: { $ne: appointment._id },

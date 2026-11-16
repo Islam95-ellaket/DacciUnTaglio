@@ -70,11 +70,6 @@ const shopSchema = new mongoose.Schema(
         workingHours: [workingHourSchema],
         blockedSlots: [blockedSlotSchema],
         recurringBlocks: [workingHourSchema],
-        bookingLockVersion: {
-            type: Number,
-            default: 0,
-        },
-
     },
     { timestamps: true },
 );

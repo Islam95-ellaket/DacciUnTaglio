@@ -9,7 +9,7 @@ import User from "./models/User.js";
 dotenv.config();
 
 const ADMIN_NAME = process.env.ADMIN_NAME || "Admin";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@barber.it";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@dacciuntaglio.it";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
 async function seed() {

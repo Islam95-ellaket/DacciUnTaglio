@@ -1,51 +1,105 @@
-/* Classi riutilizzate da più componenti. */
-
-/* Card cliccabili (scelta servizio, dashboard admin). */
-.clickable-card {
-  cursor: pointer;
-}
+/* Classi di componenti condivisi tra aree diverse (admin + cliente). */
 
 /* Sfondo scuro dietro i modal Bootstrap aperti via stato. */
 .modal-overlay-dark {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* ─── Card servizio pubblico (Home e ServicesList) ─── */
-/* Desktop: layout verticale (info sopra, bottone largo sotto).
-   Mobile: riga compatta — nome+durata a sinistra, prezzo+bottone a destra. */
-.service-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ── Badge di stato ── */
+.badge-status {
+  display: inline-block;
+  padding: 0.35em 0.8em;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
-.service-card-body .service-cta .btn {
+.badge-status-active {
+  background: var(--dut-success-bg);
+  color: var(--dut-success);
+}
+
+.badge-status-cancelled {
+  background: var(--dut-danger-bg);
+  color: var(--dut-danger);
+}
+
+.badge-status-completed {
+  background: var(--dut-neutral-bg);
+  color: var(--dut-text-secondary);
+}
+
+.badge-status-no-show {
+  background: #f7f0e1;
+  color: var(--dut-brand);
+}
+
+/* ── Prezzi in colore brand ── */
+.text-brand {
+  color: var(--dut-brand);
+}
+
+.booking-price,
+.confirm-total {
+  color: var(--dut-brand);
+}
+
+
+/* ── Select stato appuntamento (admin) ── */
+.status-select {
+  position: relative;
+}
+
+.status-select-toggle {
   width: 100%;
+  background-color: var(--dut-surface);
 }
 
-@media (max-width: 767.98px) {
-  .service-card-body {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    gap: 12px;
-  }
-
-  .service-card-body .service-cta {
-    text-align: right;
-  }
-
-  .service-card-body .service-cta .btn {
-    width: auto;
-  }
-
-  .service-card-body .service-info .fw-bold {
-    margin-top: 0;
-  }
+.status-select-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--dut-surface);
+  border: 1px solid var(--dut-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 16px rgba(28, 25, 23, 0.12);
 }
 
-/* ─── CTA "Prenota ora" nella navbar (solo desktop) ─── */
-.navbar-cta {
-  padding: 8px 16px;
+.status-select-item + .status-select-item {
+  margin-top: 2px;
+}
+
+.status-select-option {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: none;
+  text-align: left;
+}
+
+.status-select-option:hover {
+  background-color: var(--dut-neutral-bg);
+  color: var(--dut-text);
+}
+
+.status-select-option-completed:hover {
+  background-color: var(--dut-success-bg);
+  color: var(--dut-success);
+}
+
+.status-select-option-cancelled:hover {
+  background-color: var(--dut-danger-bg);
+  color: var(--dut-danger);
+}
+
+.status-select-option-no-show:hover {
+  background-color: #fff3cd;
+  color: #7a5c00;
 }

@@ -2,11 +2,8 @@ import { useState } from "react";
 import { apiFetch } from "../../api/http.js";
 import { DAYS, buildInitialHours } from "./constants.js";
 
-/**
- * Card "Orari settimanali": una riga per giorno (classe .day-row)
- * con etichetta, orario di apertura, chiusura e toggle Aperto/Chiuso.
- * Il salvataggio sostituisce l'intero elenco workingHours (PUT).
- */
+// Una riga per giorno (.day-row); il salvataggio sostituisce tutto
+// l'elenco workingHours (PUT).
 export default function HoursForm({ shop, token }) {
   const [hours, setHours] = useState(() => buildInitialHours(shop));
   const [saving, setSaving] = useState(false);

@@ -16,3 +16,83 @@ body {
   color: var(--dut-text-secondary);
   border-top: 1px solid var(--dut-border);
 }
+
+/* ── Base ── */
+body {
+  background-color: var(--dut-page-bg);
+  color: var(--dut-text);
+}
+
+/* Tipografia moderna (stack di sistema, nessun font esterno) */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+  color: var(--dut-text);
+}
+
+/* ── Navbar app: bianca, bordo inferiore, 60-64px ── */
+.navbar-app {
+  background-color: var(--dut-surface);
+  border-bottom: 1px solid var(--dut-border);
+  min-height: 62px;
+}
+
+.navbar-app .navbar-brand {
+  color: var(--dut-text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-app .nav-link {
+  color: var(--dut-text-secondary);
+}
+
+.navbar-app .nav-link:hover,
+.navbar-app .nav-link.active {
+  color: var(--dut-text);
+}
+
+.navbar-app .navbar-text {
+  color: var(--dut-text-secondary);
+}
+
+/* CTA "Prenota ora" nella navbar (solo desktop) */
+.navbar-cta {
+  padding: 8px 16px;
+}
+
+/* Forbici del logo in colore brand, come la CTA "Prenota ora" */
+.navbar-app .navbar-brand svg {
+  color: var(--dut-brand);
+}
+
+/* Hamburger più compatto */
+.navbar-app .navbar-toggler {
+  padding: 4px 8px;
+  font-size: 1rem;
+  border-color: var(--dut-border);
+}
+
+/* Nome utente accanto all'hamburger su mobile: piccolo, troncato se troppo lungo */
+.navbar-user-mobile {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dut-text-secondary);
+  max-width: 36vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Navbar che resta in cima durante lo scroll */
+.navbar-app {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}

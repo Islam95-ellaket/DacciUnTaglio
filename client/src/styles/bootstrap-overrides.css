@@ -1,0 +1,131 @@
+/* Override dei componenti Bootstrap (bottoni, card, form, alert, modal)
+   e polish globale su elementi interattivi. Dopo bootstrap, prima delle classi custom. */
+
+/* ── Bottoni ── */
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--dut-brand);
+  --bs-btn-border-color: var(--dut-brand);
+  --bs-btn-hover-bg: var(--dut-brand-dark);
+  --bs-btn-hover-border-color: var(--dut-brand-dark);
+  --bs-btn-active-bg: var(--dut-brand-dark);
+  --bs-btn-active-border-color: var(--dut-brand-dark);
+  --bs-btn-disabled-bg: var(--dut-brand);
+  --bs-btn-disabled-border-color: var(--dut-brand);
+}
+
+/* padding generoso solo sui bottoni principali (non nelle tabelle/navbar) */
+.btn-primary:not(.btn-sm) {
+  padding: 12px 20px;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--dut-brand);
+  --bs-btn-border-color: var(--dut-brand);
+  --bs-btn-hover-bg: var(--dut-brand);
+  --bs-btn-hover-border-color: var(--dut-brand);
+  --bs-btn-active-bg: var(--dut-brand-dark);
+  --bs-btn-active-border-color: var(--dut-brand-dark);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--dut-danger);
+  --bs-btn-border-color: var(--dut-danger);
+  --bs-btn-hover-bg: var(--dut-danger);
+  --bs-btn-hover-border-color: var(--dut-danger);
+}
+
+/* ── Card ── */
+.card {
+  background-color: var(--dut-surface);
+  border: 1px solid var(--dut-border);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+/* ── Campi form ── */
+.form-control,
+.form-select {
+  border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--dut-brand);
+  box-shadow: 0 0 0 0.25rem rgba(154, 107, 47, 0.15);
+}
+
+.form-check-input:checked {
+  background-color: var(--dut-brand);
+  border-color: var(--dut-brand);
+}
+
+.form-check-input:focus {
+  border-color: var(--dut-brand);
+  box-shadow: 0 0 0 0.25rem rgba(154, 107, 47, 0.15);
+}
+
+/* Transizioni fluide e non invasive sui componenti interattivi */
+.btn, .card, .slot, .service-select-card, .form-control, .form-select {
+  transition: color 0.15s ease, background-color 0.15s ease,
+    border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Ombre discrete: card leggere, un filo più presenti al passaggio del mouse */
+.card {
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
+}
+
+.card:hover {
+  box-shadow: 0 4px 14px rgba(28, 25, 23, 0.07);
+}
+
+/* Focus visibile da tastiera (accessibilità) */
+:focus-visible {
+  outline: 2px solid var(--dut-brand);
+  outline-offset: 2px;
+}
+
+/* Alert riportati nella palette (via dalle tinte blu/gialle di default) */
+.alert-info {
+  --bs-alert-color: var(--dut-text-secondary);
+  --bs-alert-bg: var(--dut-surface-muted);
+  --bs-alert-border-color: var(--dut-border);
+}
+
+.alert-warning {
+  --bs-alert-color: var(--dut-brand-dark);
+  --bs-alert-bg: #fbf7f0;
+  --bs-alert-border-color: var(--dut-border);
+}
+
+.alert-success {
+  --bs-alert-color: var(--dut-success);
+  --bs-alert-bg: var(--dut-success-bg);
+  --bs-alert-border-color: transparent;
+}
+
+.alert-danger {
+  --bs-alert-color: var(--dut-danger);
+  --bs-alert-bg: var(--dut-danger-bg);
+  --bs-alert-border-color: transparent;
+}
+
+/* Modal coerenti col resto dell'app */
+.modal-content {
+  border: 1px solid var(--dut-border);
+  border-radius: 12px;
+}
+
+/* Testo di aiuto sotto i campi: colore attenuato */
+.form-text {
+  color: var(--dut-text-secondary);
+}

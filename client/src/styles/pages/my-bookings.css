@@ -1,0 +1,11 @@
+/* Le mie prenotazioni: card passate e prezzo in lista. */
+
+/* ── Le mie prenotazioni ── */
+.past-card {
+  background-color: var(--dut-surface-muted);
+}
+
+.booking-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+}

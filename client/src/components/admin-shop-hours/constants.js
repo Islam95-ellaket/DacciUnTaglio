@@ -11,8 +11,9 @@ export const DAYS = [
   { dayOfWeek: 0, label: "Domenica" },
 ];
 
-// Valori iniziali del form "nuova pausa".
-export const EMPTY_BLOCK = { dayOfWeek: 1, open: "13:00", close: "14:00", reason: "" };
+// Il form deve partire DAVVERO vuoto: se è precompilato, il salvataggio
+// (che include il form valido) re-inserisce la pausa appena eliminata.
+export const EMPTY_BLOCK = { dayOfWeek: 1, open: "", close: "", reason: "" };
 
 export const dayLabel = (dayOfWeek) =>
   DAYS.find((d) => d.dayOfWeek === dayOfWeek)?.label ?? "";

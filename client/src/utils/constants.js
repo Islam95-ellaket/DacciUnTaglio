@@ -1,4 +1,4 @@
-// Stati appuntamento condivisi tra frontend e viste admin/cliente.
+// Stati appuntamento condivisi tra client e server.
 
 export const APPOINTMENT_STATUSES = ["active", "cancelled", "completed", "no-show"];
 
@@ -9,7 +9,7 @@ export const STATUS_LABELS = {
   "no-show": "Non presentato",
 };
 
-// Classi CSS dei badge di stato (colori in styles/admin.css).
+// Classi CSS dei badge di stato (colori definiti in styles/components.css).
 export const STATUS_BADGES = {
   active: "badge-status badge-status-active",
   cancelled: "badge-status badge-status-cancelled",

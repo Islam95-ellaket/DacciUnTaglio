@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import { formatPrice, formatDate, formatTime } from "../../utils/format.js";
 
-// Schermata finale: cerchio verde con check, dettagli dell'appuntamento
-// e due azioni: "Le mie prenotazioni" (primario) e "Torna alla home".
+// Schermata finale: cerchio verde, dettagli dell'appuntamento e due azioni.
 export default function ConfirmationScreen({ service, slot }) {
   return (
     <div className="confirm-wrap text-center mt-4">

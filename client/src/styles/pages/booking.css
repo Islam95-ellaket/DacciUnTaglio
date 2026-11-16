@@ -1,0 +1,203 @@
+/* Flusso di prenotazione: stepper, griglia slot, layout step 2,
+   card servizio selezionabile, conferma. */
+
+/* ── Stepper (booking) ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dut-text-secondary);
+}
+
+.step:not(:last-child) {
+  flex: 1;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--dut-border);
+  background: var(--dut-surface);
+  color: var(--dut-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.stepper-label {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* attivo: cerchio pieno ocra */
+.step.is-active {
+  color: var(--dut-text);
+  font-weight: 600;
+}
+
+.step.is-active .step-circle {
+  background: var(--dut-brand);
+  border-color: var(--dut-brand);
+  color: #fff;
+}
+
+/* completato: check su ocra chiaro */
+.step.is-done .step-circle {
+  background: var(--dut-brand-soft);
+  border-color: var(--dut-brand);
+  color: var(--dut-brand);
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  margin: 0 10px;
+  background: var(--dut-border);
+}
+
+.step-line.is-done {
+  background: var(--dut-brand);
+}
+
+@media (max-width: 767.98px) {
+  .stepper-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* ── Griglia slot orari ── */
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.slot {
+  border: 1px solid var(--dut-border);
+  border-radius: 10px;
+  background: var(--dut-surface);
+  color: var(--dut-text);
+  font-weight: 600;
+  padding: 12px 0; /* altezza ~45px: rispetta il target touch da 44px */
+  text-align: center;
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--dut-brand);
+  color: var(--dut-brand);
+}
+
+.slot--selected {
+  background: var(--dut-brand);
+  border-color: var(--dut-brand);
+  color: #fff;
+}
+
+/* occupato: barrato su grigio chiaro (gli slot occupati non arrivano
+   dal backend, ma la classe è pronta per stati futuri) */
+.slot:disabled {
+  background: #f1efea;
+  color: #b5aea5;
+  text-decoration: line-through;
+  cursor: default;
+}
+
+@media (max-width: 767.98px) {
+  .slot-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Layout step 2: riepilogo a sinistra (380px), slot a destra ── */
+.booking-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 991.98px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Card servizio selezionabile (step 1) ── */
+.service-select-card {
+  cursor: pointer;
+  border: 2px solid var(--dut-border);
+  border-radius: 12px;
+  background: var(--dut-surface);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.service-select-card:hover {
+  border-color: var(--dut-brand);
+  background: var(--dut-brand-soft);
+}
+
+/* ── Conferma prenotazione ── */
+.confirm-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.confirm-circle {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--dut-success-bg);
+  color: var(--dut-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-total {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* ── Card servizio selezionata (step 1): bordo ocra + sfondo chiaro ── */
+.service-select-card.selected,
+.service-select-card:active {
+  border-color: var(--dut-brand);
+  background: #fbf7f0;
+}
+
+@media (max-width: 767.98px) {
+  .stepper-label {
+    white-space: normal; /* a ~390px le etichette vanno a capo invece di traboccare */
+  }
+}
+
+/* ── Stepper su smartphone: solo cerchi, senza etichette ── */
+@media (max-width: 575.98px) {
+  .stepper-label {
+    display: none;
+  }
+}
+
+/* ── Fix: lo slot selezionato resta leggibile anche con :hover attivo
+   (su mobile il tocco lascia lo stato hover "appiccicato", e la regola
+   hover ha specificità più alta di .slot--selected da sola) ── */
+.slot--selected,
+.slot--selected:hover:not(:disabled) {
+  background: var(--dut-brand);
+  border-color: var(--dut-brand);
+  color: #fff;
+}

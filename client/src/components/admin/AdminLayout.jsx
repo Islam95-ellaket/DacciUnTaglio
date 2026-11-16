@@ -9,11 +9,8 @@ const MENU_ITEMS = [
   { to: "/admin/orari", label: "Orari di apertura" },
 ];
 
-/**
- * Layout delle pagine admin: sidebar scura su desktop (con profilo
- * utente in fondo), contenuto a destra. Su mobile la sidebar è nascosta:
- * la navigazione resta nella navbar con hamburger.
- */
+// Layout admin: sidebar scura a sinistra, contenuto a destra. Su mobile la
+// sidebar sparisce e la navigazione resta nella navbar.
 export default function AdminLayout() {
   const { user } = useContext(AuthContext);
   const { pathname } = useLocation();
@@ -55,7 +52,7 @@ export default function AdminLayout() {
       <div className="admin-content">
         <Outlet />
 
-        {/* Torna alla panoramica: nascosto quando ci si trova già sulla panoramica */}
+        {/* nascosto quando sei già sulla panoramica */}
         {pathname !== "/admin-area" && (
           <div className="mt-4">
             <Link to="/admin-area" className="btn btn-outline-secondary btn-sm admin-back">

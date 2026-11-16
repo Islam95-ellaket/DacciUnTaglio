@@ -2,7 +2,6 @@ import { checkValidation } from "../utils/validate.js";
 import Shop from "../models/Shop.js";
 import ApiError from "../utils/ApiError.js";
 
-// Admin: dati del negozio (orari di apertura, fuso orario, passo slot)
 export const getShop = async (req, res, next) => {
     try {
         const shop = await Shop.findOne();
@@ -17,8 +16,7 @@ export const getShop = async (req, res, next) => {
     }
 };
 
-// Admin: sostituisce l'intero elenco di orari di apertura.
-// Un giorno assente dall'array equivale a "chiuso".
+// Sostituisce tutto l'elenco degli orari: un giorno assente = chiuso.
 export const updateWorkingHours = async (req, res, next) => {
     try {
         checkValidation(req);
@@ -38,8 +36,8 @@ export const updateWorkingHours = async (req, res, next) => {
     }
 };
 
-// Admin: sostituisce l'intero elenco di blocchi ricorrenti (es. pausa pranzo).
-// availabilityService li converte già in intervalli da escludere dagli slot.
+// Sostituisce tutto l'elenco dei blocchi ricorrenti (es. pausa pranzo);
+// availabilityService li esclude già dagli slot generati.
 export const updateRecurringBlocks = async (req, res, next) => {
     try {
         checkValidation(req);

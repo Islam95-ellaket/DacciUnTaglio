@@ -32,6 +32,13 @@ export default function Navbar() {
           DacciUnTaglio
         </Link>
 
+        {/* Nome utente accanto all'hamburger (visibile solo sotto il breakpoint lg) */}
+        {user && (
+          <span className="navbar-user-mobile d-lg-none" title={`Ciao, ${user.name}`}>
+            Ciao, {user.name}
+          </span>
+        )}
+
         {/* Hamburger: visibile solo sotto il breakpoint lg */}
         <button
           className="navbar-toggler"
@@ -80,7 +87,7 @@ export default function Navbar() {
                   </li>
                 )}
 
-                <li className="nav-item">
+                <li className="nav-item d-none d-lg-block">
                   <span className="navbar-text ms-lg-2 fw-semibold">
                     Ciao, {user.name}
                   </span>

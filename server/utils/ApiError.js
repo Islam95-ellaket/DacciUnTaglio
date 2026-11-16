@@ -1,6 +1,5 @@
-// Errore personalizzato con codice HTTP associato.
-// Lanciando `throw new ApiError(409, 'Email già registrata')` da qualunque punto
-// del codice, l'errorHandler centralizzato risponderà con status 409 e questo messaggio.
+// Errore con codice HTTP associato: `throw new ApiError(409, "…")` da
+// qualunque punto del codice, e l'errorHandler risponde 409 con quel messaggio.
 class ApiError extends Error {
   constructor(statusCode, message) {
     super(message);

@@ -1,16 +1,39 @@
-# React + Vite
+# DacciUnTaglio — Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend dell'app di prenotazione per barbieri. La documentazione completa
+del progetto (monorepo client + server) vive nella [README della root](../README.md);
+qui solo le istruzioni rapide per questo livello.
 
-Currently, two official plugins are available:
+## Avvio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev      # sviluppo su http://localhost:5173
+```
 
-## React Compiler
+## Configurazione
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Copia `.env.example` in `.env` e imposta `VITE_API_URL`
+(es. `http://localhost:7007/api`).
 
-## Expanding the ESLint configuration
+## Comandi
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Comando | Cosa fa |
+|---|---|
+| `npm run dev` | Server di sviluppo Vite |
+| `npm run build` | Build di produzione in `dist/` |
+| `npm run preview` | Anteprima della build |
+| `npm run lint` | Controllo qualità codice (ESLint) |
+
+## Struttura di `src/`
+
+- `api/` — `apiFetch` condiviso (HTTP + JWT + gestione errori)
+- `components/` — componenti riutilizzabili, divisi per feature
+  (`booking/`, `services/`, `admin-shop-hours/`, `admin/`)
+- `context/` — `AuthContext` (sessione utente)
+- `hooks/` — `useFetch` (GET con loading/error/refetch)
+- `pages/` — pagine collegate alle route
+- `styles/` — `dacciuntaglio-theme.css` (design system) + `global.css` + `components.css`
+- `utils/` — formatter (date/prezzi) e costanti condivise
+
+Convenzioni dettagliate in [`docs/DEVELOPMENT.md`](../docs/DEVELOPMENT.md).

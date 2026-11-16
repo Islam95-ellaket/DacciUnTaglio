@@ -28,8 +28,8 @@ app.get("/api/test", (req, res) => {
 
 // Route API
 app.use("/api/auth", authRoutes);
-app.use("/api/services", serviceRoutes)
-app.use("/api/appointments", appointmentRoutes)
+app.use("/api/services", serviceRoutes);
+app.use("/api/appointments", appointmentRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/shop", shopRoutes);
 

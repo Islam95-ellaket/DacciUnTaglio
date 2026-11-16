@@ -1,0 +1,30 @@
+/* Appuntamenti admin: tabella e azioni a link di testo. */
+
+/* ── Tabella admin ── */
+.table-admin thead th {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--dut-text-secondary);
+  font-weight: 600;
+  border-bottom-width: 1px;
+}
+
+.table-admin tbody td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* azioni come link di testo */
+.action-link {
+  font-weight: 600;
+}
+
+.action-reactivate {
+  color: var(--dut-brand);
+}
+
+/* Tabella admin: riga evidenziata al passaggio del mouse */
+.table-admin tbody tr:hover {
+  background-color: var(--dut-surface-muted);
+}

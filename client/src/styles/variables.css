@@ -1,0 +1,29 @@
+/* Variabili del design system "ocra" (palette --dut-* e
+   ridefinizioni delle variabili Bootstrap). Caricato per primo. */
+
+/* ── Palette ── */
+:root {
+  --dut-brand: #9a6b2f;
+  --dut-brand-dark: #7d5626;
+  --dut-brand-soft: #fbf7f0;
+  --dut-page-bg: #f7f5f2;
+  --dut-surface: #ffffff;
+  --dut-surface-muted: #faf8f5;
+  --dut-border: #e5e1db;
+  --dut-text: #1c1917;
+  --dut-text-secondary: #6b6259;
+
+  --dut-success: #2f7d4f;
+  --dut-success-bg: #e7f4ec;
+  --dut-danger: #b3261e;
+  --dut-danger-bg: #fbeae8;
+  --dut-neutral-bg: #efeeec;
+
+  /* ridefinizioni Bootstrap */
+  --bs-primary: #9a6b2f;
+  --bs-link-color: #9a6b2f;
+  --bs-link-hover-color: #7d5626;
+  --bs-body-bg: #f7f5f2;
+  --bs-body-color: #1c1917;
+  --bs-border-color: #e5e1db;
+}

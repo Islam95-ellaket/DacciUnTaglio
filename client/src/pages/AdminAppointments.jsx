@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext, useCallback } from "react";
 import AuthContext from "../context/AuthContext";
 import ErrorAlert from "../components/ErrorAlert";
+import StatusSelect from "../components/StatusSelect";
 import { apiFetch } from "../api/http.js";
-import { getRomeDate, formatPrice, formatDateShort, formatTime } from "../utils/format.js";
+import { getRomeDate, formatDateShort, formatTime } from "../utils/format.js";
 import { APPOINTMENT_STATUSES, STATUS_LABELS, STATUS_BADGES } from "../utils/constants.js";
 
 const UNAUTHORIZED_MESSAGE = "Sessione scaduta. Effettua nuovamente l'accesso.";
@@ -10,52 +11,51 @@ const UNAUTHORIZED_MESSAGE = "Sessione scaduta. Effettua nuovamente l'accesso.";
 export default function AdminAppointments() {
   const { token } = useContext(AuthContext);
 
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
-
   const [from, setFrom] = useState(() => getRomeDate());
   const [to, setTo] = useState(() => getRomeDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)));
 
   const invalidRange = !from || !to || from > to;
 
-  const loadAppointments = useCallback(async (signal) => {
-    if (!token) {
-      setAppointments([]);
-      setLoading(false);
-      setError(UNAUTHORIZED_MESSAGE);
-      return;
-    }
+  // Caricabile solo con sessione valida e intervallo sensato: il guard è
+  // derivato dallo stato, così l'effect non esegue setState sincroni.
+  const canLoad = Boolean(token) && !invalidRange;
 
-    if (invalidRange) {
-      setAppointments([]);
-      setLoading(false);
-      return;
-    }
+  const [appointments, setAppointments] = useState([]);
+  // Se non c'è nulla da caricare, non vogliamo lo spinner appeso all'infinito.
+  const [loading, setLoading] = useState(canLoad);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null);
 
-    setLoading(true);
-    setError(null);
-
-    try {
+  // Catena di promesse: nessun setState sincrono nel corpo della funzione.
+  const loadAppointments = useCallback(
+    (signal) => {
       const params = new URLSearchParams({ from, to });
-      const data = await apiFetch(`/appointments/admin?${params}`, { token, signal });
-      if (!Array.isArray(data)) throw new Error("Risposta del server non valida.");
-      setAppointments(data);
-    } catch (err) {
-      if (err.name === "AbortError") return;
-      setError(err.status === 401 ? UNAUTHORIZED_MESSAGE : err.message);
-    } finally {
-      if (!signal?.aborted) setLoading(false);
-    }
-  }, [from, to, token, invalidRange]);
+
+      return apiFetch(`/appointments/admin?${params}`, { token, signal })
+        .then((data) => {
+          if (!Array.isArray(data)) throw new Error("Risposta del server non valida.");
+          setAppointments(data);
+          setError(null);
+        })
+        .catch((err) => {
+          if (err.name === "AbortError") return;
+          setError(err.status === 401 ? UNAUTHORIZED_MESSAGE : err.message);
+        })
+        .finally(() => {
+          if (!signal?.aborted) setLoading(false);
+        });
+    },
+    [from, to, token]
+  );
 
   useEffect(() => {
+    if (!canLoad) return; // sessione assente o intervallo invalido: nulla da caricare
+
     const controller = new AbortController();
     loadAppointments(controller.signal);
     return () => controller.abort();
-  }, [loadAppointments]);
+  }, [canLoad, loadAppointments]);
 
   const handleStatusChange = async (id, newStatus) => {
     if (!token || updatingId !== null) return;
@@ -87,13 +87,13 @@ export default function AdminAppointments() {
 
   const isPast = (iso) => new Date(iso) < new Date();
 
+  // Senza token l'errore è derivato: la sessione assente si mostra come un
+  // normale errore di caricamento.
+  const displayError = error ?? (token ? null : UNAUTHORIZED_MESSAGE);
+
   const renderActions = (a) => (
     isPast(a.end) ? (
-      <select className="form-select form-select-sm" value={a.status} onChange={(e) => handleStatusChange(a._id, e.target.value)} disabled={updatingId !== null}>
-        <option value="completed">Completato</option>
-        <option value="cancelled">Annullato</option>
-        <option value="no-show">Non presentato</option>
-      </select>
+      <StatusSelect value={a.status} disabled={updatingId !== null} onChange={(newStatus) => handleStatusChange(a._id, newStatus)} />
     ) : (
       <>
         {a.status === "active" && (
@@ -130,7 +130,7 @@ export default function AdminAppointments() {
 
       {invalidRange && <div className="alert alert-warning">Seleziona un intervallo valido.</div>}
       {!invalidRange && loading && <div className="text-center my-4">Caricamento...</div>}
-      <ErrorAlert message={error} onRetry={() => loadAppointments()} />
+      <ErrorAlert message={displayError} onRetry={() => loadAppointments()} />
 
       {!loading && !error && !invalidRange && appointments.length === 0 && (
         <div className="alert alert-info">Nessun appuntamento.</div>

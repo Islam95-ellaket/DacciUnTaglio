@@ -7,11 +7,8 @@ import { apiFetch } from "../api/http.js";
 import { formatPrice, formatDate, formatTime } from "../utils/format.js";
 import { STATUS_LABELS, STATUS_BADGES } from "../utils/constants.js";
 
-/**
- * "Le mie prenotazioni": card attive (badge verde, prezzo grande,
- * annullamento a destra) e card passate/annullate su sfondo chiaro.
- * Gli stati vuoti offrono sempre un'azione per proseguire.
- */
+// Card attive (annullabili) e card passate/annullate; gli stati vuoti
+// offrono sempre un'azione per proseguire.
 export default function MyBookings() {
   const { token } = useContext(AuthContext);
 

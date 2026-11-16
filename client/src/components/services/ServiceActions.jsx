@@ -1,5 +1,4 @@
-// Azioni di un servizio nella lista admin: condivise tra le card (mobile)
-// e la tabella (desktop) per non duplicare i bottoni.
+// Bottoni condivisi tra card (mobile) e tabella (desktop).
 export default function ServiceActions({ service, onEdit, onDelete }) {
   return (
     <>

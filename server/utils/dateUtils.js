@@ -1,4 +1,4 @@
-// Validazione di una data in formato YYYY-MM-DD (rifiuta anche date impossibili come 2026-02-30)
+// Valida una data YYYY-MM-DD, rifiutando anche le date impossibili (2026-02-30)
 export function isValidDateString(date) {
     if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return false;
@@ -14,7 +14,6 @@ export function isValidDateString(date) {
     );
 }
 
-// Giorno successivo in formato YYYY-MM-DD
 export function nextDate(date) {
     const [year, month, day] = date.split("-").map(Number);
     const next = new Date(Date.UTC(year, month - 1, day + 1));
@@ -26,10 +25,8 @@ export function nextDate(date) {
     ].join("-");
 }
 
-/**
- * Converte un oggetto Date UTC nella stringa YYYY-MM-DD locale del negozio.
- * Essenziale per ricalcolare la disponibilità sulla data corretta.
- */
+// Date UTC → "YYYY-MM-DD" nel fuso del negozio: la disponibilità si calcola
+// sulla data giusta.
 export function getLocalDateString(utcDate, timeZone = "Europe/Rome") {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,

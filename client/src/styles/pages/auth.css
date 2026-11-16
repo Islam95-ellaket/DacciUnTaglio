@@ -1,0 +1,111 @@
+/* Login e Registrazione: card auth e input con icone. */
+
+/* ── Auth (Login / Register) ── */
+.auth-card {
+  max-width: 440px;
+  margin: 40px auto;
+  background-color: var(--dut-surface);
+  border: 1px solid var(--dut-border);
+  border-radius: 14px;
+}
+
+.auth-card .card-body {
+  padding: 32px;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  color: var(--dut-text-secondary);
+  font-size: 0.95rem;
+}
+
+.auth-switch {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--dut-text-secondary);
+}
+
+.auth-switch a {
+  color: var(--dut-brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 767.98px) {
+  .auth-card {
+    max-width: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .auth-card .card-body {
+    padding: 24px 16px;
+  }
+}
+
+/* ── Label dei campi nelle card auth (12px, stile bozza) ── */
+.auth-card .form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--dut-text-secondary);
+}
+
+/* ── Input group con icone (Login/Register) ── */
+.input-group-text {
+  background-color: var(--dut-surface);
+  border-color: var(--dut-border);
+  color: var(--dut-text-secondary);
+}
+
+.input-group > .form-control {
+  border-left: none;
+}
+
+.input-group > .form-control:focus {
+  border-left: none;
+  box-shadow: none;
+  border-color: var(--dut-border);
+}
+
+.input-group:focus-within {
+  border-radius: 10px;
+  box-shadow: 0 0 0 0.25rem rgba(154, 107, 47, 0.15);
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: var(--dut-brand);
+}
+
+/* bottone-icona (occhiella password) dentro l'input group */
+.input-group-icon-btn {
+  cursor: pointer;
+  border-left: none;
+}
+
+.input-group-icon-btn:hover {
+  color: var(--dut-brand);
+}
+
+
+/* Separatore "oppure" tra form e accesso con Google */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--dut-text-secondary);
+  font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--dut-border);
+}
