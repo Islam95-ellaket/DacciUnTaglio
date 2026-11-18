@@ -34,6 +34,12 @@ const getTransporter = () => {
     port,
     secure: port === 465, // SSL diretto solo sulla 465; con la 587 Nodemailer usa STARTTLS da solo
     auth: SMTP_USER ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
+    // Timeout corti: alcune piattaforme (es. Render free) bloccano l'SMTP in
+    // uscita: meglio fallire in 5 secondi che far attendere i 2 minuti di
+    // timeout di default di Nodemailer.
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000,
   });
 
   return transporter;

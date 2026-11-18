@@ -98,18 +98,20 @@ export const createAppointment = async (req, res, next) => {
       status: "active",
     });
 
-    // 7. Email in try/catch separato: è un effetto collaterale, se fallisce
-    //    la prenotazione (già salvata) resta valida.
-    try {
-      const user = await User.findById(req.user.id);
-      if (user) {
-        await sendBookingConfirmationEmail({ user, service, appointment, shop });
-      }
-    } catch (emailError) {
-      console.error("⚠️ Email di conferma non inviata:", emailError.message);
-    }
-
+    // La prenotazione è confermata: rispondiamo SUBITO al cliente.
     res.status(201).json(appointment);
+
+    // 7. Email di conferma in background: NON la aspettiamo. Se l'SMTP è
+    //    lento o bloccato (Render free blocca l'SMTP in uscita), il cliente
+    //    non deve mai accorgersene.
+    (async () => {
+      try {
+        const user = await User.findById(req.user.id);
+        if (user) await sendBookingConfirmationEmail({ user, service, appointment, shop });
+      } catch (emailError) {
+        console.error("⚠️ Email di conferma non inviata:", emailError.message);
+      }
+    })();
   } catch (error) {
     if (error.code === 11000) {
       return next(new ApiError(409, "Slot già prenotato"));
