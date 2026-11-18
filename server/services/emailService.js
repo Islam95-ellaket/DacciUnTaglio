@@ -45,10 +45,53 @@ const getTransporter = () => {
   return transporter;
 };
 
+// Divide "DacciUnTaglio <noreply@…>" in nome + email: SendGrid li vuole separati.
+const parseFrom = (from) => {
+  const match = from.match(/^(.*?)\s*<([^<>]+)>$/);
+  if (match) {
+    return { name: match[1].replace(/"/g, "").trim() || undefined, email: match[2].trim() };
+  }
+  return { email: from.trim() };
+};
+
+// Invio via API HTTP di SendGrid (porta 443: raggiungibile anche da Render,
+// dove l'SMTP in uscita è bloccato). Zero dipendenze: usa fetch di Node.
+const sendViaSendGrid = async (mail) => {
+  const { name, email } = parseFrom(mail.from);
+
+  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: mail.to }] }],
+      from: name ? { email, name } : { email },
+      subject: mail.subject,
+      content: [
+        { type: "text/plain", value: mail.text },
+        { type: "text/html", value: mail.html },
+      ],
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`SendGrid ha risposto ${res.status}: ${detail.slice(0, 200)}`);
+  }
+};
+
 /**
  * Invia l'email di conferma di una prenotazione.
  * Chi la chiama deve gestire gli errori: una email mancata NON deve mai
  * annullare la prenotazione.
+ *
+ * Tre modalità, in ordine di preferenza:
+ * 1. SendGrid API HTTP (SENDGRID_API_KEY) — funziona anche su Render;
+ * 2. SMTP (SMTP_HOST, es. Mailtrap) — solo in locale, Render lo blocca;
+ * 3. nessuna configurazione → stampa in console.
  */
 export const sendBookingConfirmationEmail = async ({ user, service, appointment, shop }) => {
   const timeZone = shop.timezone || "Europe/Rome";
@@ -167,6 +210,12 @@ export const sendBookingConfirmationEmail = async ({ user, service, appointment,
     text,
     html,
   };
+
+  // Modalità 1: SendGrid via API HTTP (funziona anche su Render).
+  if (process.env.SENDGRID_API_KEY) {
+    await sendViaSendGrid(mail);
+    return;
+  }
 
   const transport = getTransporter();
 
