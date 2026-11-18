@@ -83,13 +83,41 @@ const sendViaSendGrid = async (mail) => {
   }
 };
 
+// Stesso principio di SendGrid, provider alternativo (niente verifica telefonica
+// per la registrazione).
+const sendViaBrevo = async (mail) => {
+  const { name, email } = parseFrom(mail.from);
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": process.env.BREVO_API_KEY,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: name ? { name, email } : { email },
+      to: [{ email: mail.to }],
+      subject: mail.subject,
+      textContent: mail.text,
+      htmlContent: mail.html,
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Brevo ha risposto ${res.status}: ${detail.slice(0, 200)}`);
+  }
+};
+
 /**
  * Invia l'email di conferma di una prenotazione.
  * Chi la chiama deve gestire gli errori: una email mancata NON deve mai
  * annullare la prenotazione.
  *
  * Tre modalità, in ordine di preferenza:
- * 1. SendGrid API HTTP (SENDGRID_API_KEY) — funziona anche su Render;
+ * 1. API HTTP (SENDGRID_API_KEY o BREVO_API_KEY) — funziona anche su Render;
  * 2. SMTP (SMTP_HOST, es. Mailtrap) — solo in locale, Render lo blocca;
  * 3. nessuna configurazione → stampa in console.
  */
@@ -211,9 +239,13 @@ export const sendBookingConfirmationEmail = async ({ user, service, appointment,
     html,
   };
 
-  // Modalità 1: SendGrid via API HTTP (funziona anche su Render).
+  // Modalità 1: API HTTP (SendGrid o Brevo — funzionano anche su Render).
   if (process.env.SENDGRID_API_KEY) {
     await sendViaSendGrid(mail);
+    return;
+  }
+  if (process.env.BREVO_API_KEY) {
+    await sendViaBrevo(mail);
     return;
   }
 
