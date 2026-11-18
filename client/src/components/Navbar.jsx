@@ -21,6 +21,16 @@ export default function Navbar() {
     navigate("/booking");
   };
 
+  // CTA "Prenota ora": nel menu mobile compare SOTTO "Le mie prenotazioni";
+  // su desktop resta a destra grazie a order-lg-last.
+  const cta = (
+    <li className="nav-item d-none d-md-block ms-lg-3 order-lg-last">
+      <button className="btn btn-primary btn-sm navbar-cta" onClick={goToBooking}>
+        Prenota ora
+      </button>
+    </li>
+  );
+
   // Classe "active" automatica sulla pagina corrente
   const linkClass = ({ isActive }) => `nav-link ${isActive ? "active" : ""}`;
 
@@ -68,14 +78,8 @@ export default function Navbar() {
               </NavLink>
             </li>
 
-            {/* CTA principale: sempre visibile su desktop (tranne che per l'admin) */}
-            {(!user || user.role !== "admin") && (
-              <li className="nav-item d-none d-md-block ms-lg-3 order-lg-last">
-                <button className="btn btn-primary btn-sm navbar-cta" onClick={goToBooking}>
-                  Prenota ora
-                </button>
-              </li>
-            )}
+            {/* Ospiti: la CTA sta dopo "Servizi" */}
+            {!user && cta}
 
             {user ? (
               <>
@@ -86,6 +90,9 @@ export default function Navbar() {
                     </NavLink>
                   </li>
                 )}
+
+                {/* Loggati: la CTA sta sotto "Le mie prenotazioni" */}
+                {user.role !== "admin" && cta}
 
                 <li className="nav-item d-none d-lg-block">
                   <span className="navbar-text ms-lg-2 fw-semibold">
