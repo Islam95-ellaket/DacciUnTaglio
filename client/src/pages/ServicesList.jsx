@@ -18,12 +18,12 @@ export default function ServicesList() {
       <div className="row g-3">
         {services.map((s) => (
           <div className="col-md-4" key={s._id}>
-            <div className="card h-100 service-card">
-              <img
-                src={s.imageUrl || "/images/barber-bg.jpg"}
-                alt={s.name}
-                className="service-card-img"
-              />
+            <div
+              className="card h-100 service-card"
+              style={{
+                backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.88), rgba(251, 247, 240, 0.88)), url("${s.imageUrl || "/images/barber-bg.jpg"}")`,
+              }}
+            >
               <div className="card-body service-card-body">
                 <div className="service-info">
                   <h5 className="card-title mb-1">{s.name}</h5>
