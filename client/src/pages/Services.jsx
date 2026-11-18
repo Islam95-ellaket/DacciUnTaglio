@@ -4,11 +4,12 @@ import ErrorAlert from "../components/ErrorAlert";
 import useFetch from "../hooks/useFetch";
 import { apiFetch } from "../api/http.js";
 import { formatPrice } from "../utils/format.js";
+import { uploadImageToCloudinary } from "../utils/cloudinary.js";
 import ServiceActions from "../components/services/ServiceActions.jsx";
 import ServiceEditModal from "../components/services/ServiceEditModal.jsx";
 
-// Gestione servizi: creazione, modifica e disattivazione (soft delete:
-// il backend mette isActive: false).
+// Gestione servizi: creazione (con immagine opzionale caricata su Cloudinary),
+// modifica e disattivazione (soft delete: il backend mette isActive: false).
 export default function Services() {
   const { token } = useContext(AuthContext);
 
@@ -24,15 +25,42 @@ export default function Services() {
 
   // form creazione
   const [form, setForm] = useState({ name: "", price: "", durationMinutes: "" });
+  const [imageFile, setImageFile] = useState(null); // file scelto per la CREAZIONE
+  const [imagePreview, setImagePreview] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // servizio in modifica (null = modal chiuso)
   const [editing, setEditing] = useState(null);
+  const [editImageFile, setEditImageFile] = useState(null); // nuova immagine in modifica
+  const [editImagePreview, setEditImagePreview] = useState("");
 
-  // --- POST creazione ---
+  // Anteprima locale del file scelto (nessun upload finché non si salva)
+  const makePreview = (file) =>
+    file ? URL.createObjectURL(file) : "";
+
+  const handleImageChange = (e, setFile, setPreview) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Immagine troppo grande (massimo 5 MB).");
+      e.target.value = "";
+      return;
+    }
+    setFile(file);
+    setPreview(makePreview(file));
+    setMessage("");
+  };
+
+  // --- POST creazione (immagine prima su Cloudinary, poi servizio col link) ---
   const handleCreate = async (e) => {
     e.preventDefault();
     setMessage("");
+    setSaving(true);
     try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
       const service = await apiFetch("/services", {
         method: "POST",
         token,
@@ -40,13 +68,18 @@ export default function Services() {
           name: form.name.trim(),
           price: Number(form.price),
           durationMinutes: Number(form.durationMinutes),
+          imageUrl,
         },
       });
       setServices((prev) => [...prev, service]);
       setForm({ name: "", price: "", durationMinutes: "" });
+      setImageFile(null);
+      setImagePreview("");
       setMessage("Servizio creato.");
     } catch (err) {
       setMessage(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -54,7 +87,13 @@ export default function Services() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!editing) return;
+    setSaving(true);
+    setMessage("");
     try {
+      let imageUrl = editing.imageUrl;
+      if (editImageFile) {
+        imageUrl = await uploadImageToCloudinary(editImageFile);
+      }
       const updated = await apiFetch(`/services/${editing._id}`, {
         method: "PATCH",
         token,
@@ -62,13 +101,18 @@ export default function Services() {
           name: editing.name.trim(),
           price: Number(editing.price),
           durationMinutes: Number(editing.durationMinutes),
+          imageUrl,
         },
       });
       setServices((prev) => prev.map((s) => (s._id === updated._id ? updated : s)));
       setEditing(null);
+      setEditImageFile(null);
+      setEditImagePreview("");
       setMessage("Servizio aggiornato.");
     } catch (err) {
       setMessage(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -83,6 +127,12 @@ export default function Services() {
     } catch (err) {
       setMessage(err.message);
     }
+  };
+
+  const openEdit = (service) => {
+    setEditing({ ...service });
+    setEditImageFile(null);
+    setEditImagePreview("");
   };
 
   if (loading) return <div className="text-center mt-5">Caricamento...</div>;
@@ -128,9 +178,28 @@ export default function Services() {
           />
         </div>
         <div className="col-md-2">
-          <button className="btn btn-primary w-100" type="submit">
-            Aggiungi
+          <button className="btn btn-primary w-100" type="submit" disabled={saving}>
+            {saving ? "Salvataggio..." : "Aggiungi"}
           </button>
+        </div>
+        <div className="col-12 d-flex align-items-center gap-3">
+          <input
+            type="file"
+            accept="image/*"
+            className="form-control"
+            style={{ maxWidth: 420 }}
+            onChange={(e) => handleImageChange(e, setImageFile, setImagePreview)}
+          />
+          <span className="small text-secondary">
+            Immagine facoltativa (jpg, png, webp — max 5 MB)
+          </span>
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Anteprima"
+              style={{ width: 52, height: 52, objectFit: "cover", borderRadius: 8 }}
+            />
+          )}
         </div>
       </form>
 
@@ -146,7 +215,7 @@ export default function Services() {
               <div className="small text-muted mb-2">
                 Durata: {s.durationMinutes} min
               </div>
-              <ServiceActions service={s} onEdit={setEditing} onDelete={handleDelete} />
+              <ServiceActions service={s} onEdit={openEdit} onDelete={handleDelete} />
             </div>
           </div>
         ))}
@@ -166,11 +235,20 @@ export default function Services() {
           <tbody>
             {services.map((s) => (
               <tr key={s._id}>
-                <td>{s.name}</td>
+                <td className="d-flex align-items-center gap-2">
+                  {s.imageUrl && (
+                    <img
+                      src={s.imageUrl}
+                      alt=""
+                      style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 8 }}
+                    />
+                  )}
+                  {s.name}
+                </td>
                 <td>{formatPrice(s.price)}</td>
                 <td>{s.durationMinutes} min</td>
                 <td>
-                  <ServiceActions service={s} onEdit={setEditing} onDelete={handleDelete} />
+                  <ServiceActions service={s} onEdit={openEdit} onDelete={handleDelete} />
                 </td>
               </tr>
             ))}
@@ -183,6 +261,9 @@ export default function Services() {
         onChange={setEditing}
         onClose={() => setEditing(null)}
         onSubmit={handleUpdate}
+        saving={saving}
+        imagePreview={editImagePreview || editing?.imageUrl || ""}
+        onImageChange={(e) => handleImageChange(e, setEditImageFile, setEditImagePreview)}
       />
 
       {services.length === 0 && (

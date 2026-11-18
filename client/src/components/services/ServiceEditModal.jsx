@@ -1,6 +1,14 @@
 // Modal di modifica servizio. editing = servizio in modifica o null:
 // il guard rende il componente robusto anche se arriva null.
-export default function ServiceEditModal({ editing, onChange, onClose, onSubmit }) {
+export default function ServiceEditModal({
+  editing,
+  onChange,
+  onClose,
+  onSubmit,
+  saving,
+  imagePreview,
+  onImageChange,
+}) {
   if (!editing) return null;
 
   return (
@@ -47,13 +55,32 @@ export default function ServiceEditModal({ editing, onChange, onClose, onSubmit 
                   required
                 />
               </div>
+              <div>
+                <label className="form-label">Immagine (facoltativa)</label>
+                <div className="d-flex align-items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="form-control"
+                    onChange={onImageChange}
+                  />
+                  {imagePreview && (
+                    <img
+                      src={imagePreview}
+                      alt="Anteprima"
+                      style={{ width: 52, height: 52, objectFit: "cover", borderRadius: 8 }}
+                    />
+                  )}
+                </div>
+                <div className="form-text">Nuovo file = sostituisci l'immagine attuale.</div>
+              </div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Annulla
               </button>
-              <button type="submit" className="btn btn-primary">
-                Salva
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? "Salvataggio..." : "Salva"}
               </button>
             </div>
           </form>

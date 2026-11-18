@@ -21,11 +21,12 @@ export const createService = async (req, res, next) => {
             throw new ApiError(404, "Configurazione del negozio non trovata nel database");
         }
 
-        const { name, price, durationMinutes } = req.body;
+        const { name, price, durationMinutes, imageUrl } = req.body;
         const service = await Service.create({
             name,
             price,
             durationMinutes,
+            imageUrl: imageUrl || "",
             shopId: shop._id,
         });
 
@@ -41,10 +42,11 @@ export const updateService = async (req, res, next) => {
 
         // Aggiornamento parziale: solo i campi presenti nel body
         const updates = {};
-        const { name, price, durationMinutes } = req.body;
+        const { name, price, durationMinutes, imageUrl } = req.body;
         if (name !== undefined) updates.name = name;
         if (price !== undefined) updates.price = price;
         if (durationMinutes !== undefined) updates.durationMinutes = durationMinutes;
+        if (imageUrl !== undefined) updates.imageUrl = imageUrl;
 
         const service = await Service.findByIdAndUpdate(req.params.id, updates, {
             new: true,

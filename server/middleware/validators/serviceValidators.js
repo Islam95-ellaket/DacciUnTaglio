@@ -13,6 +13,14 @@ export const createValidator = [
     body("durationMinutes")
         .isInt({ min: 1 })
         .withMessage("Inserisci la durata in minuti (minimo 1)"),
+
+    // Immagine opzionale: URL dell'immagine caricata su Cloudinary
+    body("imageUrl")
+        .optional({ checkFalsy: true })
+        .isURL()
+        .withMessage("L'URL dell'immagine non è valido")
+        .isLength({ max: 500 })
+        .withMessage("L'URL dell'immagine è troppo lungo"),
 ];
 
 export const updateValidator = [
@@ -31,4 +39,11 @@ export const updateValidator = [
         .optional()
         .isInt({ min: 1 })
         .withMessage("Inserisci la durata in minuti (minimo 1)"),
+
+    body("imageUrl")
+        .optional({ checkFalsy: true })
+        .isURL()
+        .withMessage("L'URL dell'immagine non è valido")
+        .isLength({ max: 500 })
+        .withMessage("L'URL dell'immagine è troppo lungo"),
 ];

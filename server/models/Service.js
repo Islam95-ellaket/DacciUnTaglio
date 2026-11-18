@@ -22,6 +22,12 @@ const serviceSchema = new mongoose.Schema(
             required: true,
             min: 1,
         },
+        // Immagine del servizio: URL (da Cloudinary), vuoto = immagine di default
+        imageUrl: {
+            type: String,
+            default: "",
+            trim: true,
+        },
         isActive: {
             type: Boolean,
             default: true,

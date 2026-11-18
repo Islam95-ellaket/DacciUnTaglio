@@ -19,6 +19,9 @@ export default function ServicesList() {
         {services.map((s) => (
           <div className="col-md-4" key={s._id}>
             <div className="card h-100 service-card">
+              {s.imageUrl && (
+                <img src={s.imageUrl} alt={s.name} className="service-card-img" />
+              )}
               <div className="card-body service-card-body">
                 <div className="service-info">
                   <h5 className="card-title mb-1">{s.name}</h5>

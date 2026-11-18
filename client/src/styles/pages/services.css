@@ -1,6 +1,15 @@
-/* ─── Card servizio pubblico (Home e ServicesList) ─── */
-/* Desktop: layout verticale (info sopra, bottone largo sotto).
+/* Pagina pubblica dei servizi: card con immagine opzionale in cima.
+   Desktop: layout verticale (info sopra, bottone largo sotto).
    Mobile: riga compatta — nome+durata a sinistra, prezzo+bottone a destra. */
+
+/* Immagine in cima alla card (solo se il servizio ce l'ha) */
+.service-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
 .service-card-body {
   display: flex;
   flex-direction: column;
