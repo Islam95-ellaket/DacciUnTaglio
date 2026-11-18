@@ -5,6 +5,11 @@
 .btn {
   border-radius: 10px;
   font-weight: 600;
+  /* Flex centrato: il testo resta in mezzo al bottone (orizzontale e
+     verticale) qualunque siano padding e altezza. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
