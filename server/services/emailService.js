@@ -54,37 +54,8 @@ const parseFrom = (from) => {
   return { email: from.trim() };
 };
 
-// Invio via API HTTP di SendGrid (porta 443: raggiungibile anche da Render,
+// Invio via API HTTP di Brevo (porta 443: raggiungibile anche da Render,
 // dove l'SMTP in uscita è bloccato). Zero dipendenze: usa fetch di Node.
-const sendViaSendGrid = async (mail) => {
-  const { name, email } = parseFrom(mail.from);
-
-  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: mail.to }] }],
-      from: name ? { email, name } : { email },
-      subject: mail.subject,
-      content: [
-        { type: "text/plain", value: mail.text },
-        { type: "text/html", value: mail.html },
-      ],
-    }),
-    signal: AbortSignal.timeout(10000),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`SendGrid ha risposto ${res.status}: ${detail.slice(0, 200)}`);
-  }
-};
-
-// Stesso principio di SendGrid, provider alternativo (niente verifica telefonica
-// per la registrazione).
 const sendViaBrevo = async (mail) => {
   const { name, email } = parseFrom(mail.from);
 
@@ -117,7 +88,7 @@ const sendViaBrevo = async (mail) => {
  * annullare la prenotazione.
  *
  * Tre modalità, in ordine di preferenza:
- * 1. API HTTP (SENDGRID_API_KEY o BREVO_API_KEY) — funziona anche su Render;
+ * 1. Brevo API HTTP (BREVO_API_KEY) — funziona anche su Render;
  * 2. SMTP (SMTP_HOST, es. Mailtrap) — solo in locale, Render lo blocca;
  * 3. nessuna configurazione → stampa in console.
  */
@@ -239,11 +210,7 @@ export const sendBookingConfirmationEmail = async ({ user, service, appointment,
     html,
   };
 
-  // Modalità 1: API HTTP (SendGrid o Brevo — funzionano anche su Render).
-  if (process.env.SENDGRID_API_KEY) {
-    await sendViaSendGrid(mail);
-    return;
-  }
+  // Modalità 1: Brevo via API HTTP (funziona anche su Render).
   if (process.env.BREVO_API_KEY) {
     await sendViaBrevo(mail);
     return;
