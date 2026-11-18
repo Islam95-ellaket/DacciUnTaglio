@@ -53,7 +53,7 @@ export default function Home() {
                 <div
                   className="card h-100 service-card"
                   style={{
-                    backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.88), rgba(251, 247, 240, 0.88)), url("${s.imageUrl || "/images/barber-bg.jpg"}")`,
+                    backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.94), rgba(251, 247, 240, 0.94)), url("${s.imageUrl || "/images/barber-bg.jpg"}")`,
                   }}
                 >
                   <div className="card-body service-card-body">
