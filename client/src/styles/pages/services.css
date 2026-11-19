@@ -1,12 +1,15 @@
-/* Pagina pubblica dei servizi: card con la foto del servizio come sfondo,
-   velo chiaro sopra per la leggibilità di nome/durata/prezzo.
+/* Pagina pubblica dei servizi: card con immagine in cima e dettagli sotto.
    Desktop: layout verticale (info sopra, bottone largo sotto).
    Mobile: riga compatta — nome+durata a sinistra, prezzo+bottone a destra. */
 
-/* L'immagine (di default del salone o caricata dall'admin) copre la card */
-.service-card {
-  background-size: cover;
-  background-position: center;
+/* Fascia immagine in cima alla card: copre l'area (object-fit: cover),
+   il centro della foto resta visibile su ogni dimensione di schermo. */
+.service-card-img {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
 }
 
 .service-card-body {
