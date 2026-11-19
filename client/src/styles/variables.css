@@ -1,8 +1,12 @@
 /* Variabili del design system "ocra" (palette --dut-* e
-   ridefinizioni delle variabili Bootstrap). Caricato per primo. */
+   ridefinizioni delle variabili Bootstrap). Caricato per primo.
+   Il blocco vale per il tema chiaro E per lo stato "senza tema" (primo
+   paint): in dark questi --bs-* verrebbero altrimenti sovrascritti qui per
+   ordine di sorgente, quindi il selettore ESCLUDE data-bs-theme="dark"
+   lasciando vincere le variabili dark di Bootstrap. */
 
 /* ── Palette ── */
-:root {
+:root:not([data-bs-theme="dark"]) {
   --dut-brand: #9a6b2f;
   --dut-brand-dark: #7d5626;
   --dut-brand-soft: #fbf7f0;
@@ -38,6 +42,8 @@
    Si attiva con data-bs-theme="dark" su <html> (lo imposta ThemeContext).
    Bootstrap ribalta i suoi componenti da solo; qui ribaltiamo la palette. */
 :root[data-bs-theme="dark"] {
+  --dut-brand: #9a6b2f;
+  --dut-brand-dark: #b07f3e;
   --dut-page-bg: #17130f;
   --dut-surface: #221c16;
   --dut-surface-muted: #2b241d;

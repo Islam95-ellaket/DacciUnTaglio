@@ -10,7 +10,9 @@
 .admin-sidebar {
   width: 248px;
   flex-shrink: 0;
-  background: var(--dut-text);
+  /* Colore fisso: la sidebar e' VOULUTAMENTE scura in entrambi i temi
+     (non usare --dut-text: in dark diventerebbe chiara). */
+  background: #1c1917;
   border-radius: 12px;
   padding: 12px;
   position: sticky;

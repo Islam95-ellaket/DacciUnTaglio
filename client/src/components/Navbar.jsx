@@ -51,17 +51,6 @@ export default function Navbar() {
           </span>
         )}
 
-        {/* Cambio tema chiaro/scuro: sempre visibile, accanto all'hamburger */}
-        <button
-          type="button"
-          className="btn btn-sm navbar-theme-toggle"
-          onClick={toggleTheme}
-          aria-label={theme === "dark" ? "Passa alla modalità chiara" : "Passa alla modalità scura"}
-          title={theme === "dark" ? "Modalità chiara" : "Modalità scura"}
-        >
-          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
-
         {/* Hamburger: visibile solo sotto il breakpoint lg */}
         <button
           className="navbar-toggler"
@@ -129,6 +118,20 @@ export default function Navbar() {
                 </NavLink>
               </li>
             )}
+
+            {/* Tema: dentro il menu hamburger su mobile; su desktop la
+                navbar e' espansa, quindi compare in barra vicino a Esci */}
+            <li className="nav-item ms-lg-2">
+              <button
+                type="button"
+                className="nav-link navbar-theme-toggle"
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? "Passa alla modalità chiara" : "Passa alla modalità scura"}
+                title={theme === "dark" ? "Modalità chiara" : "Modalità scura"}
+              >
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+            </li>
           </ul>
         </div>
       </div>
