@@ -121,7 +121,7 @@ export default function Navbar() {
 
             {/* Tema: dentro il menu hamburger su mobile; su desktop la
                 navbar e' espansa, quindi compare in barra vicino a Esci */}
-            <li className="nav-item ms-lg-2">
+            <li className="nav-item mt-3 mt-lg-0 ms-lg-2">
               <button
                 type="button"
                 className="nav-link navbar-theme-toggle"

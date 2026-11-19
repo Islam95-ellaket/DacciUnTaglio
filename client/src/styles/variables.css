@@ -53,6 +53,8 @@
 
   --dut-brand-soft: #33290f;
   --dut-neutral-bg: #2b241d;
+  --dut-success: #74b98a;
+  --dut-danger: #d97a72;
   --dut-success-bg: #1c2e23;
   --dut-danger-bg: #34201c;
   --dut-card-veil: rgba(24, 19, 14, 0.82);

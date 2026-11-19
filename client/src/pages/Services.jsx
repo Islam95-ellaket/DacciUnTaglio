@@ -235,15 +235,19 @@ export default function Services() {
           <tbody>
             {services.map((s) => (
               <tr key={s._id}>
-                <td className="d-flex align-items-center gap-2">
-                  {s.imageUrl && (
-                    <img
-                      src={s.imageUrl}
-                      alt=""
-                      style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 8 }}
-                    />
-                  )}
-                  {s.name}
+                <td>
+                  {/* Il flex va sul div interno: d-flex sul <td> romperebbe
+                      l'allineamento delle celle della riga */}
+                  <div className="d-flex align-items-center gap-2">
+                    {s.imageUrl && (
+                      <img
+                        src={s.imageUrl}
+                        alt=""
+                        style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 8 }}
+                      />
+                    )}
+                    {s.name}
+                  </div>
                 </td>
                 <td>{formatPrice(s.price)}</td>
                 <td>{s.durationMinutes} min</td>
