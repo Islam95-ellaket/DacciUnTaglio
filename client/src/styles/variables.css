@@ -27,3 +27,27 @@
   --bs-body-color: #1c1917;
   --bs-border-color: #e5e1db;
 }
+
+/* Velo sopra le foto-card: garantisce la leggibilità del testo sopra
+   l'immagine, in entrambi i temi. */
+:root {
+  --dut-card-veil: rgba(251, 247, 240, 0.93);
+}
+
+/* ── Dark mode ──
+   Si attiva con data-bs-theme="dark" su <html> (lo imposta ThemeContext).
+   Bootstrap ribalta i suoi componenti da solo; qui ribaltiamo la palette. */
+:root[data-bs-theme="dark"] {
+  --dut-page-bg: #17130f;
+  --dut-surface: #221c16;
+  --dut-surface-muted: #2b241d;
+  --dut-border: #3d342a;
+  --dut-text: #f2ede6;
+  --dut-text-secondary: #b3a89b;
+
+  --dut-brand-soft: #33290f;
+  --dut-neutral-bg: #2b241d;
+  --dut-success-bg: #1c2e23;
+  --dut-danger-bg: #34201c;
+  --dut-card-veil: rgba(24, 19, 14, 0.82);
+}

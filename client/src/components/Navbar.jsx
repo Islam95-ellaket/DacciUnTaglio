@@ -1,10 +1,12 @@
 import { useContext, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Scissors } from "lucide-react";
+import { Scissors, Moon, Sun } from "lucide-react";
 import AuthContext from "../context/AuthContext";
+import { useTheme } from "../hooks/useTheme.js";
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -48,6 +50,17 @@ export default function Navbar() {
             Ciao, {user.name}
           </span>
         )}
+
+        {/* Cambio tema chiaro/scuro: sempre visibile, accanto all'hamburger */}
+        <button
+          type="button"
+          className="btn btn-sm navbar-theme-toggle"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Passa alla modalità chiara" : "Passa alla modalità scura"}
+          title={theme === "dark" ? "Modalità chiara" : "Modalità scura"}
+        >
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
 
         {/* Hamburger: visibile solo sotto il breakpoint lg */}
         <button

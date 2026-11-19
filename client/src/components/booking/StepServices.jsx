@@ -19,7 +19,7 @@ export default function StepServices({ services, loading, error, onRetry, onSele
               style={
                 s.imageUrl
                   ? {
-                      backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.93), rgba(251, 247, 240, 0.93)), url("${s.imageUrl}")`,
+                      backgroundImage: `linear-gradient(var(--dut-card-veil), var(--dut-card-veil)), url("${s.imageUrl}")`,
                     }
                   : undefined
               }

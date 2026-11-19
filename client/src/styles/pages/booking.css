@@ -150,8 +150,8 @@
   /* Sfondo: foto del salone con velo chiaro sopra per la leggibilità */
   background-color: var(--dut-surface);
   background-image: linear-gradient(
-      rgba(251, 247, 240, 0.93),
-      rgba(251, 247, 240, 0.93)
+      var(--dut-card-veil),
+      var(--dut-card-veil)
     ),
     url("/images/barber-bg.jpg");
   background-size: cover;

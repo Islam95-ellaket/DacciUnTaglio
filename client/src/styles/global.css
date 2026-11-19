@@ -90,6 +90,21 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 
+/* Bottone tema chiaro/scuro in navbar */
+.navbar-theme-toggle {
+  padding: 4px 8px;
+  border: 1px solid var(--dut-border);
+  border-radius: 8px;
+  color: var(--dut-text-secondary);
+  background: transparent;
+  line-height: 1;
+}
+
+.navbar-theme-toggle:hover {
+  color: var(--dut-brand);
+  border-color: var(--dut-brand);
+}
+
 /* Navbar che resta in cima durante lo scroll */
 .navbar-app {
   position: sticky;
