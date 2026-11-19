@@ -82,16 +82,12 @@ const sendViaBrevo = async (mail) => {
   }
 };
 
-/**
- * Invia l'email di conferma di una prenotazione.
- * Chi la chiama deve gestire gli errori: una email mancata NON deve mai
- * annullare la prenotazione.
- *
- * Tre modalità, in ordine di preferenza:
- * 1. Brevo API HTTP (BREVO_API_KEY) — funziona anche su Render;
- * 2. SMTP (SMTP_HOST, es. Mailtrap) — solo in locale, Render lo blocca;
- * 3. nessuna configurazione → stampa in console.
- */
+// Invia l'email di conferma. Chi la chiama gestisce gli errori: una email
+// mancata NON deve mai annullare la prenotazione.
+// Tre modalità, in ordine di preferenza:
+// 1. Brevo API HTTP (BREVO_API_KEY) — funziona anche su Render;
+// 2. SMTP (SMTP_HOST, es. Mailtrap) — solo in locale, Render lo blocca;
+// 3. nessuna configurazione → stampa in console.
 export const sendBookingConfirmationEmail = async ({ user, service, appointment, shop }) => {
   const timeZone = shop.timezone || "Europe/Rome";
 
