@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Scissors, Moon, Sun } from "lucide-react";
 import AuthContext from "../context/AuthContext";
-import { useTheme } from "../hooks/useTheme.js";
+import useTheme from "../hooks/useTheme.js";
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
