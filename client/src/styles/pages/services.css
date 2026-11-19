@@ -2,12 +2,14 @@
    Desktop: layout verticale (info sopra, bottone largo sotto).
    Mobile: riga compatta — nome+durata a sinistra, prezzo+bottone a destra. */
 
-/* Fascia immagine in cima alla card: larghezza piena e altezza naturale,
-   cosi' la foto si vede SEMPRE intera, su ogni schermo (niente ritagli). */
+/* Fascia immagine in cima alla card: altezza fissa uguale per tutte
+   (object-fit: cover) — la griglia resta dritta anche mischiando foto di
+   proporzioni diverse. Per un ritaglio minimo caricare foto orizzontali. */
 .service-card-img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 200px;
+  object-fit: cover;
   border-radius: 12px 12px 0 0;
 }
 
