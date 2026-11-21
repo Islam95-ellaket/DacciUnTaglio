@@ -53,13 +53,18 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
           },
         });
 
-        // Larghezza adattiva: riempie il contenitore senza traboccare sui telefoni.
-        const width = Math.min(400, buttonRef.current.clientWidth || 320);
-        // Il bottone "outline" di Google è bianco: in dark mode spara, quindi
-        // usiamo "filled_black" (nero con testo bianco). Ogni cambio tema
-        // ricalcola la larghezza e sostituisce il bottone già disegnato.
+        // L'iframe di Google riempie il div: se il div è più largo del
+        // bottone (Google lo limita a 400px), i bordi bianchi dell'iframe
+        // spuntano ai lati in dark mode. Il div deve quindi essere ESATTAMENTE
+        // largo quanto il bottone, e lo centriamo sotto quello "Accedi".
+        const containerWidth = buttonRef.current.parentElement?.clientWidth || 320;
+        const width = Math.min(400, containerWidth);
         buttonRef.current.innerHTML = "";
+        buttonRef.current.style.width = `${width}px`;
+        buttonRef.current.style.marginInline = "auto";
         window.google.accounts.id.renderButton(buttonRef.current, {
+          // "outline" è bianco: in dark mode spara, quindi usiamo "filled_black"
+          // (nero con testo bianco). Al cambio tema l'effetto riparte e ridisegna il bottone.
           theme: theme === "dark" ? "filled_black" : "outline",
           size: "large",
           text,
