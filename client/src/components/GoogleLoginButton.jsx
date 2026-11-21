@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import AuthContext from "../context/AuthContext";
+import useTheme from "../hooks/useTheme.js";
 
 // Senza Client ID configurato il bottone non viene mostrato.
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -25,6 +26,7 @@ const loadGoogleScript = () => {
 
 export default function GoogleLoginButton({ text = "continue_with", onError, onSuccess }) {
   const { googleLogin } = useContext(AuthContext);
+  const { theme } = useTheme();
   const buttonRef = useRef(null);
   const [scriptError, setScriptError] = useState(false);
 
@@ -53,8 +55,12 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
 
         // Larghezza adattiva: riempie il contenitore senza traboccare sui telefoni.
         const width = Math.min(400, buttonRef.current.clientWidth || 320);
+        // Il bottone "outline" di Google è bianco: in dark mode spara, quindi
+        // usiamo "filled_black" (nero con testo bianco). Ogni cambio tema
+        // ricalcola la larghezza e sostituisce il bottone già disegnato.
+        buttonRef.current.innerHTML = "";
         window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: "outline",
+          theme: theme === "dark" ? "filled_black" : "outline",
           size: "large",
           text,
           width,
@@ -69,7 +75,7 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
     return () => {
       cancelled = true;
     };
-  }, [googleLogin, onError, onSuccess, text]);
+  }, [googleLogin, onError, onSuccess, text, theme]);
 
   if (!CLIENT_ID) return null;
 
