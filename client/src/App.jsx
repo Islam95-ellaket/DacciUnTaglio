@@ -51,10 +51,14 @@ export default function App() {
         </Routes>
       </div>
       <footer className="app-footer text-center small py-4 mt-4">
-        © 2026 DacciUnTaglio, Via Roma 12, Milano — Tel.{" "}
-        <a href="tel:+393331234567" className="text-decoration-none">
-          +39 333 1234567
-        </a>
+        © 2026 DacciUnTaglio, Via Roma 12, Milano
+        <span className="d-none d-sm-inline"> — </span>
+        <span className="d-block d-sm-inline mt-1 mt-sm-0">
+          Tel.{" "}
+          <a href="tel:+393331234567" className="text-decoration-none">
+            +39 333 1234567
+          </a>
+        </span>
       </footer>
     </>
   );
