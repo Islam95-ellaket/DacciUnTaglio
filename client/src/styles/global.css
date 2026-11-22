@@ -17,20 +17,6 @@ body {
   border-top: 1px solid var(--dut-border);
 }
 
-/* Contenitore del bottone ufficiale "Accedi con Google" (iframe cross-origin).
-   Google renderizza l'iframe 20px più largo del bottone e lo rientra con
-   margini negativi: i bordi dell'iframe rimarrebbero visibili come cornice
-   bianca sui fondi scuri. Il contenitore taglia l'eccedenza e ripristina
-   il contorno chiaro che il taglio toglie al bottone nero di Google. */
-.google-login-btn {
-  overflow: hidden;
-  border-radius: var(--bs-border-radius-lg);
-}
-
-[data-bs-theme="dark"] .google-login-btn {
-  box-shadow: 0 0 0 1px #5e5e5e;
-}
-
 /* ── Base ── */
 body {
   background-color: var(--dut-page-bg);

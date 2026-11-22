@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import AuthContext from "../context/AuthContext";
-import useTheme from "../hooks/useTheme.js";
 
 // Senza Client ID configurato il bottone non viene mostrato.
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -26,18 +25,8 @@ const loadGoogleScript = () => {
 
 export default function GoogleLoginButton({ text = "continue_with", onError, onSuccess }) {
   const { googleLogin } = useContext(AuthContext);
-  const { theme } = useTheme();
   const buttonRef = useRef(null);
   const [scriptError, setScriptError] = useState(false);
-
-  // Le callback arrivano come arrow function inline dai genitori: a ogni loro
-  // render sarebbero un riferimento nuovo e l'effetto sotto ridisegnerebbe il
-  // bottone (con disegni sovrapposti e testo che scatta). In una ref sempre
-  // aggiornata l'effetto resta stabile e le chiama comunque quelle attuali.
-  const callbacksRef = useRef({ googleLogin, onError, onSuccess });
-  useEffect(() => {
-    callbacksRef.current = { googleLogin, onError, onSuccess };
-  });
 
   useEffect(() => {
     if (!CLIENT_ID || !buttonRef.current) return;
@@ -54,27 +43,18 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
           client_id: CLIENT_ID,
           callback: async ({ credential }) => {
             try {
-              await callbacksRef.current.googleLogin(credential);
-              callbacksRef.current.onSuccess?.();
+              await googleLogin(credential);
+              onSuccess?.();
             } catch (err) {
-              callbacksRef.current.onError?.(err.message);
+              onError?.(err.message);
             }
           },
         });
 
-        // L'iframe di Google riempie il div: se il div è più largo del
-        // bottone (Google lo limita a 400px), i bordi bianchi dell'iframe
-        // spuntano ai lati in dark mode. Il div deve quindi essere ESATTAMENTE
-        // largo quanto il bottone, e lo centriamo sotto quello "Accedi".
-        const containerWidth = buttonRef.current.parentElement?.clientWidth || 320;
-        const width = Math.min(400, containerWidth);
-        buttonRef.current.innerHTML = "";
-        buttonRef.current.style.width = `${width}px`;
-        buttonRef.current.style.marginInline = "auto";
+        // Larghezza adattiva: riempie il contenitore senza traboccare sui telefoni.
+        const width = Math.min(400, buttonRef.current.clientWidth || 320);
         window.google.accounts.id.renderButton(buttonRef.current, {
-          // "outline" è bianco: in dark mode spara, quindi usiamo "filled_black"
-          // (nero con testo bianco). Al cambio tema l'effetto riparte e ridisegna il bottone.
-          theme: theme === "dark" ? "filled_black" : "outline",
+          theme: "outline",
           size: "large",
           text,
           width,
@@ -89,8 +69,7 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
     return () => {
       cancelled = true;
     };
-    // Ridisegno solo al cambio tema o testo: le callback viaggiano sulla ref.
-  }, [text, theme]);
+  }, [googleLogin, onError, onSuccess, text]);
 
   if (!CLIENT_ID) return null;
 
@@ -102,9 +81,6 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
     );
   }
 
-  // Google disegna dentro questo div il suo bottone ufficiale (iframe).
-  // L'iframe sporge di 10px per lato oltre al div con margini negativi,
-  // lasciando scoperti dei bordi bianchi su fondi scuri: il div deve
-  // tagliare l'eccedenza (classe google-login-btn in global.css).
-  return <div ref={buttonRef} aria-label="Accedi con Google" className="google-login-btn" />;
+  // Google disegna dentro questo div il suo bottone ufficiale.
+  return <div ref={buttonRef} aria-label="Accedi con Google" />;
 }
