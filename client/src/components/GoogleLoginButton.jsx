@@ -52,7 +52,20 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
         });
 
         // Larghezza adattiva: riempie il contenitore senza traboccare sui telefoni.
-        const width = Math.min(400, buttonRef.current.clientWidth || 320);
+        // Larghezza naturale del div = larghezza del contenuto del genitore
+        // (come il bottone "Accedi" in w-100); va letta PRIMA di assegnare
+        // style.width, altrimenti la seconda esecuzione trova quella vecchia.
+        buttonRef.current.style.width = "";
+        const containerWidth = buttonRef.current.clientWidth || 320;
+        const width = Math.min(400, containerWidth);
+        // Google non disegna il bottone oltre i 400px: il div resta largo
+        // quanto il bottone e, se il contenitore è più largo, lo zoom sul div
+        // (quello sull'iframe viene ignorato) lo porta a tutta la larghezza.
+        // Sotto i 400px di contenitore tutto resta al naturale (zoom 1).
+        buttonRef.current.style.width = `${width}px`;
+        if (containerWidth > width) {
+          buttonRef.current.style.zoom = String(containerWidth / width);
+        }
         window.google.accounts.id.renderButton(buttonRef.current, {
           theme: "outline",
           size: "large",
