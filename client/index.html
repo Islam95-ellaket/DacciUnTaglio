@@ -8,6 +8,10 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Script di Google Identity: precaricato qui invece che dal componente,
+         così parte subito e il bottone appare quasi istantaneamente. Il
+         componente riusa questo tag senza duplicarlo. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

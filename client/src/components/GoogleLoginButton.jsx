@@ -5,12 +5,29 @@ import AuthContext from "../context/AuthContext";
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 
-// Lo script di Google si carica una volta sola, anche se il componente
-// viene rimontato (la promise in cache evita richieste doppie).
+// Lo script di Google arriva precaricato da index.html: qui lo riusiamo
+// senza crearne un secondo (la promise in cache evita anche richieste doppie).
 let scriptPromise = null;
 const loadGoogleScript = () => {
   if (!scriptPromise) {
     scriptPromise = new Promise((resolve, reject) => {
+      // Caso normale: lo script di index.html è già stato eseguito.
+      if (window.google?.accounts?.id) {
+        resolve();
+        return;
+      }
+
+      // Ancora in caricamento: agganciamo il tag già presente.
+      const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
+      if (existing) {
+        existing.addEventListener("load", resolve);
+        existing.addEventListener("error", () =>
+          reject(new Error("script Google non caricato"))
+        );
+        return;
+      }
+
+      // Fallback (es. script tolto dall'HTML): lo creiamo noi.
       const script = document.createElement("script");
       script.src = SCRIPT_SRC;
       script.async = true;

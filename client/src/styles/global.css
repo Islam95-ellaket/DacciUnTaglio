@@ -24,6 +24,21 @@ body {
   min-height: 44px;
 }
 
+/* Scheletro mostrato solo finché l'iframe di Google non è stato inserito
+   (:empty smette di valere da solo appena arriva il bottone vero). */
+.google-login-slot:empty {
+  background: var(--dut-surface);
+  border: 1px solid var(--dut-border);
+  border-radius: var(--bs-border-radius);
+  animation: google-slot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes google-slot-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
 /* ── Base ── */
 body {
   background-color: var(--dut-page-bg);
