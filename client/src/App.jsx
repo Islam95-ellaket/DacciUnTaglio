@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -50,16 +51,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      <footer className="app-footer text-center small py-4 mt-4">
-        © 2026 DacciUnTaglio, Via Roma 12, Milano
-        <span className="d-none d-sm-inline"> — </span>
-        <span className="d-block d-sm-inline mt-1 mt-sm-0">
-          Tel.{" "}
-          <a href="tel:+393331234567" className="text-decoration-none">
-            +39 333 1234567
-          </a>
-        </span>
-      </footer>
+      <Footer />
     </>
   );
 }
