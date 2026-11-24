@@ -28,6 +28,15 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
   const buttonRef = useRef(null);
   const [scriptError, setScriptError] = useState(false);
 
+  // Le callback arrivano come arrow function inline dai genitori: a ogni loro
+  // render sarebbero un riferimento nuovo e l'effetto sotto ridisegnerebbe il
+  // bottone Google a OGNI tasto premuto (con sfarfallio). In una ref sempre
+  // aggiornata l'effetto resta stabile e chiama comunque quelle attuali.
+  const callbacksRef = useRef({ googleLogin, onError, onSuccess });
+  useEffect(() => {
+    callbacksRef.current = { googleLogin, onError, onSuccess };
+  });
+
   useEffect(() => {
     if (!CLIENT_ID || !buttonRef.current) return;
 
@@ -43,10 +52,10 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
           client_id: CLIENT_ID,
           callback: async ({ credential }) => {
             try {
-              await googleLogin(credential);
-              onSuccess?.();
+              await callbacksRef.current.googleLogin(credential);
+              callbacksRef.current.onSuccess?.();
             } catch (err) {
-              onError?.(err.message);
+              callbacksRef.current.onError?.(err.message);
             }
           },
         });
@@ -82,7 +91,9 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
     return () => {
       cancelled = true;
     };
-  }, [googleLogin, onError, onSuccess, text]);
+    // Il bottone si disegna una volta sola (o se cambia il testo): le callback
+    // viaggiano sulla ref, quindi NON ridisegnare a ogni render dei genitori.
+  }, [text]);
 
   if (!CLIENT_ID) return null;
 
