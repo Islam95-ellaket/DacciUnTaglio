@@ -94,6 +94,8 @@ export default function GoogleLoginButton({ text = "continue_with", onError, onS
     );
   }
 
-  // Google disegna dentro questo div il suo bottone ufficiale.
-  return <div ref={buttonRef} aria-label="Accedi con Google" />;
+  // Google disegna dentro questo div il suo bottone ufficiale (iframe
+  // asincrono). Il CSS riserva lo spazio con un'altezza minima, altrimenti
+  // quando il bottone arriva spinge in basso il contenuto sotto di lui.
+  return <div ref={buttonRef} aria-label="Accedi con Google" className="google-login-slot" />;
 }

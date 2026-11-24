@@ -17,6 +17,13 @@ body {
   border-top: 1px solid var(--dut-border);
 }
 
+/* Contenitore del bottone "Accedi con Google": l'iframe arriva in modo
+   asincrono e senza spazio riservato spingerebbe in basso il contenuto
+   sotto di lui (salto di layout al caricamento della pagina). */
+.google-login-slot {
+  min-height: 44px;
+}
+
 /* ── Base ── */
 body {
   background-color: var(--dut-page-bg);
